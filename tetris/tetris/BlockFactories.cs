@@ -27,13 +27,13 @@ namespace Tetris
             block.Rotations[1].SetFilled(1, new Point(0, 1));
             block.Rotations[1].SetFilled(2, new Point(1, 1));
             block.Rotations[1].SetFilled(3, new Point(1, 2));
-            // - - -
             // - X -
             // X X X
-            block.Rotations[2].SetFilled(0, new Point(1, 1));
-            block.Rotations[2].SetFilled(1, new Point(0, 2));
-            block.Rotations[2].SetFilled(2, new Point(1, 2));
-            block.Rotations[2].SetFilled(3, new Point(2, 2));
+            // - - -
+            block.Rotations[2].SetFilled(0, new Point(1, 0));
+            block.Rotations[2].SetFilled(1, new Point(0, 1));
+            block.Rotations[2].SetFilled(2, new Point(1, 1));
+            block.Rotations[2].SetFilled(3, new Point(2, 1));
             // - X -
             // - X X
             // - X -
@@ -65,10 +65,10 @@ namespace Tetris
             // - - -
             // - - X
             // X X X
-            block.Rotations[2].SetFilled(0, new Point(2, 1));
-            block.Rotations[2].SetFilled(1, new Point(0, 2));
-            block.Rotations[2].SetFilled(2, new Point(1, 2));
-            block.Rotations[2].SetFilled(3, new Point(2, 2));
+            block.Rotations[2].SetFilled(0, new Point(2, 0));
+            block.Rotations[2].SetFilled(1, new Point(0, 1));
+            block.Rotations[2].SetFilled(2, new Point(1, 1));
+            block.Rotations[2].SetFilled(3, new Point(2, 1));
             // - X -
             // - X -
             // - X X
