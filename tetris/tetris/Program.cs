@@ -10,7 +10,7 @@ namespace Tetris
         /// </summary>
         static void Main(string[] args)
         {
-            using (Application game = new Application())
+            using (TetrisGame game = new TetrisGame())
             {
                 game.Run();
             }

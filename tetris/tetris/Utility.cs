@@ -11,5 +11,10 @@ namespace Tetris
         {
             return TimeSpan.FromMilliseconds(1000 / fps);
         }
+
+        public static int ConvertTo1DIndex(int row, int column, int totalColumns)
+        {
+            return (row * totalColumns) + column;
+        }
     }
 }
