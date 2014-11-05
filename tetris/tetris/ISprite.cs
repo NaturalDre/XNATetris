@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 
-namespace Tetris
+namespace BytesOfPi.Graphics
 {
     interface ISprite
     {
