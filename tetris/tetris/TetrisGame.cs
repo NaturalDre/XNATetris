@@ -16,16 +16,12 @@ namespace Tetris
     /// </summary>
     public class TetrisGame : Microsoft.Xna.Framework.Game
     {
-        private const Keys MoveLeftKey = Keys.A;
-        private const Keys MoveRightKey = Keys.D;
-        private const Keys RotateLeftKey = Keys.Left;
-        private const Keys RotateRightKey = Keys.Right;
-
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         TetrisModel tetrisModel;
         TetrisView tetrisView;
+        TetrisController tetrisController;
 
         public TetrisGame()
         {
@@ -66,7 +62,8 @@ namespace Tetris
                 new Func<Block>(BlockFactories.CreateLBlock));
             this.tetrisModel.StartGame();
 
-            this.tetrisView = new TetrisView(this, tetrisModel);
+            this.tetrisView = new TetrisView(this, this.tetrisModel);
+            this.tetrisController = new TetrisController(this.tetrisModel);
         }
 
         /// <summary>
@@ -90,26 +87,10 @@ namespace Tetris
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) == true)
                 this.Exit();
 
-            KeyboardState keyboardState = Keyboard.GetState();
-
-            bool moveLeftKeyIsDown = keyboardState.IsKeyDown(TetrisGame.MoveLeftKey);
-            bool moveRightKeyIsDown = keyboardState.IsKeyDown(TetrisGame.MoveRightKey);
-            bool rotateLeftKeyIsDown = keyboardState.IsKeyDown(TetrisGame.RotateLeftKey);
-            bool rotateRightKeyIsDown = keyboardState.IsKeyDown(TetrisGame.RotateRightKey);
-
-            if (moveLeftKeyIsDown && !moveRightKeyIsDown)
-                this.tetrisModel.MoveLeft();
-            else if (moveRightKeyIsDown && !moveLeftKeyIsDown)
-                this.tetrisModel.MoveRight();
-
-            if (rotateLeftKeyIsDown && !rotateRightKeyIsDown)
-                this.tetrisModel.RotateLeft();
-            else if (rotateRightKeyIsDown && !rotateLeftKeyIsDown)
-                this.tetrisModel.RotateRight();
-
             // TODO: Add your update logic here
             this.tetrisModel.Update(gameTime);
-
+            this.tetrisController.Update(gameTime);
+            
             base.Update(gameTime);
         }
 

@@ -18,20 +18,11 @@ namespace Tetris
         /// How much time should pass for gravity to be applied.
         /// </summary>
         private static readonly TimeSpan GravityTimeSpan;
+
         /// <summary>
         /// The color that represents an empty space on the Tetris board.
         /// </summary>
         public static readonly Color EmptySpaceColor;
-        /// <summary>
-        /// How much time must pass before movement is allowed again.
-        /// Prevents rotating too quickly.
-        /// </summary>
-        public static readonly TimeSpan MovementCooldown;
-        /// <summary>
-        /// How much time must pass before rotation is allowed again.
-        /// Prevents moving too quickly.
-        /// </summary>
-        public static readonly TimeSpan RotationCooldown;
 
         /// <summary>
         /// The amount of rows the Tetris board should have.
@@ -39,10 +30,12 @@ namespace Tetris
         ///     The top left of the board is (0,0).
         /// </summary>
         public const int BoardRows = 22;
+
         /// <summary>
         /// The amount of columns the Tetris board should have.
         /// </summary>
         public const int BoardColumns = 10;
+
         // The size that each cell will be when drawn.
         public  const int CellSizeInPixels = 32;
         /// <summary>
@@ -57,16 +50,7 @@ namespace Tetris
         /// Time remaining until gravity is applied.
         /// </summary>
         private TimeSpan gravityTimer = TetrisModel.GravityTimeSpan;
-        /// <summary>
-        /// Time remaining until the player can move. This only applies if
-        /// This.MovementAllowed is false.
-        /// </summary>
-        private TimeSpan movementTimer = TetrisModel.MovementCooldown;
-        /// <summary>
-        /// Time remaining until the player can rotate. This only applies if
-        /// this.RotationAllowed is false.
-        /// </summary>
-        private TimeSpan rotationTimer = TetrisModel.RotationCooldown;
+
         private Block currentBlock = null;
         private List<Func<Block>> blockFactories = new List<Func<Block>>();
         private Random random = new Random();
@@ -75,8 +59,7 @@ namespace Tetris
         {
             TetrisModel.GravityTimeSpan = new TimeSpan(0, 0, 1);
             TetrisModel.EmptySpaceColor = Color.Magenta;
-            TetrisModel.MovementCooldown = new TimeSpan(0, 0, 0, 0, 100);
-            TetrisModel.RotationCooldown = new TimeSpan(0, 0, 0, 0, 100);
+
         }
 
         public TetrisModel()
@@ -100,16 +83,7 @@ namespace Tetris
         {
             get { return this.currentBlock; }
             set { this.currentBlock = value; }
-        }
-
-        /// <summary>
-        /// Is the player allowed to move?
-        /// </summary>
-        public bool MovementAllowed { get; private set; }
-        /// <summary>
-        /// Is the player allowed to rotate?
-        /// </summary>
-        public bool RotationAllowed { get; private set; }
+        }        
 
         /// <summary>
         /// Get the value of a cell on the Tetris board.
@@ -172,29 +146,7 @@ namespace Tetris
                 Console.WriteLine("Gravity Applied.");
             }
 
-            // If the player is not allowed to rotate, we'll count down until
-            // the player can rotate again.
-            if (!this.RotationAllowed)
-            {
-                this.rotationTimer -= gameTime.ElapsedGameTime;
-                if (this.rotationTimer <= TimeSpan.Zero)
-                {
-                    this.RotationAllowed = true;
-                    this.rotationTimer = TetrisModel.RotationCooldown;
-                }
-            }
 
-            // If the player is not allowed to move, we'll count down until
-            // the player can move again.
-            if (!this.MovementAllowed)
-            {
-                this.movementTimer -= gameTime.ElapsedGameTime;
-                if (this.movementTimer <= TimeSpan.Zero)
-                {
-                    this.MovementAllowed = true;
-                    this.movementTimer = TetrisModel.RotationCooldown;
-                }
-            }
         }
 
         public void StartGame()
@@ -238,9 +190,8 @@ namespace Tetris
             {
                 this.LockCurrentBlock();
                 this.RemoveFilledRows();
-                // Test code
                 this.CurrentBlock = CreateRandomBlock();
-                this.CurrentBlock.Row = 14;
+
             }
             else // Otherwise, we can move it down one row.
                 this.CurrentBlock.Row++;
@@ -267,48 +218,56 @@ namespace Tetris
             }
         }
 
-        public void MoveLeft()
+        public bool MoveLeft()
         {
-            if (this.MovementAllowed && this.CanFit(this.CurrentBlock.Row,
+            if (this.CanFit(this.CurrentBlock.Row,
                     this.CurrentBlock.Column - 1,
                     this.CurrentBlock.Rotation))
             {
                 this.CurrentBlock.Column--;
-                this.MovementAllowed = false;
+                return true;
             }
+
+            return false;
         }
 
-        public void MoveRight()
+        public bool MoveRight()
         {
-            if (this.MovementAllowed && this.CanFit(this.CurrentBlock.Row,
+            if (this.CanFit(this.CurrentBlock.Row,
                     this.CurrentBlock.Column + 1,
                     this.CurrentBlock.Rotation))
             {
                 this.CurrentBlock.Column++;
-                this.MovementAllowed = false;
+                return true;
             }
+
+            return false;
         }
 
-        public void RotateLeft()
+        public bool RotateLeft()
         {
-            if (this.RotationAllowed && this.CanFit(this.CurrentBlock.Row,
+            if (this.CanFit(this.CurrentBlock.Row,
                     this.CurrentBlock.Column,
                     this.CurrentBlock.GetNextRotation()))
             {
                 this.CurrentBlock.RotateLeft();
-                this.RotationAllowed = false;
+                return true;
             }
+
+            return false;
         }
 
-        public void RotateRight()
+        public bool RotateRight()
         {
-            if (this.RotationAllowed && this.CanFit(this.CurrentBlock.Row,
+            if (this.CanFit(this.CurrentBlock.Row,
                     this.CurrentBlock.Column,
                     this.CurrentBlock.GetNextRotation()))
             {
                 this.CurrentBlock.RotateRight();
-                this.RotationAllowed = false;
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
