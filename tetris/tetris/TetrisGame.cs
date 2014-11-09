@@ -28,7 +28,7 @@ namespace Tetris
             graphics = new GraphicsDeviceManager(this);
             graphics.IsFullScreen = false;
             graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferHeight = TetrisModel.BoardRows * TetrisModel.CellSizeInPixels;
             Content.RootDirectory = "Content";
         }
 

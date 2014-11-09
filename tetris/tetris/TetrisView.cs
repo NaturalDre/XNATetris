@@ -19,6 +19,8 @@ namespace Tetris
         /// Use Spritebatch to tint it to the desired color.
         /// </summary>
         private readonly Texture2D blockTexture;
+        private readonly Texture2D areaTexture;
+        private readonly Texture2D backgroundTexture;
 
         public TetrisView(TetrisGame tetrisGame, TetrisModel tetrisModel)
         {
@@ -29,11 +31,16 @@ namespace Tetris
             this.tetrisModel = tetrisModel;
             this.spriteBatch = new SpriteBatch(tetrisGame.GraphicsDevice);
 
-            try { this.blockTexture = this.tetrisGame.Content.Load<Texture2D>(@"Images/Square"); }
+            try 
+            { 
+                this.blockTexture = this.tetrisGame.Content.Load<Texture2D>(@"Images/Square");
+                this.areaTexture = this.tetrisGame.Content.Load<Texture2D>(@"Images/areaBackground");
+                this.backgroundTexture = this.tetrisGame.Content.Load<Texture2D>(@"Images/tetrisBackground");
+            }
             catch (Microsoft.Xna.Framework.Content.ContentLoadException exception) 
             {
                 // Mostly for testing.
-                Console.WriteLine("Error loading the square texture: {0}", exception.ToString());
+                Console.WriteLine("Error loading the textures: {0}", exception.ToString());
                 Console.WriteLine("\n\nPress enter to close the game.");
                 Console.ReadLine();
                 tetrisGame.Exit();
@@ -44,6 +51,24 @@ namespace Tetris
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 
+            // Test code
+
+            // Draw the background.
+            spriteBatch.Draw(this.backgroundTexture, new Vector2(0, 0), Color.White);
+
+            // Draw the area that the pieces will fall inside of.
+            Rectangle area = new Rectangle(
+                0,
+                0,
+                TetrisModel.BoardColumns * TetrisModel.CellSizeInPixels,
+                TetrisModel.BoardRows * TetrisModel.CellSizeInPixels);
+            spriteBatch.Draw(this.areaTexture, area, Color.Black);
+
+            // End test code
+
+
+
+
             // Loop through each cell on the game board
             for (int row = 0; row < TetrisModel.BoardRows; row++)
             {
@@ -52,7 +77,7 @@ namespace Tetris
                     // If cell (row,col) on the Tetris board is occupied with a
                     // color that is NOT Color.Magenta, we will draw it.
                     // Note: Color.Magenta is considered empty space.
-                    if (this.tetrisModel.GetBoardData(row, column) != Color.Magenta)
+                    if (this.tetrisModel.IsCellFilled(row, column))
                         spriteBatch.Draw(
                             this.blockTexture,
                             new Rectangle(
@@ -60,20 +85,20 @@ namespace Tetris
                                 row * TetrisModel.CellSizeInPixels,
                                 TetrisModel.CellSizeInPixels,
                                 TetrisModel.CellSizeInPixels),
-                            this.tetrisModel.GetBoardData(row, column));
+                            this.tetrisModel.GiveCellColor(row, column));
                 }
             }
 
-            // Draw the piece being controlled by the player.
-            DrawRotation(this.tetrisModel.CurrentBlock);
-
             // Draw the "ghost" piece.
-            Point ghostPosition = this.tetrisModel.GetDropLocation();
+            Point ghostPosition = this.tetrisModel.DropPosition();
             DrawRotation(
                 this.tetrisModel.CurrentBlock.Rotation,
                 this.tetrisModel.CurrentBlock.Size,
                 ghostPosition,
                 Color.White);
+
+            // Draw the piece being controlled by the player.
+            DrawRotation(this.tetrisModel.CurrentBlock);
 
             spriteBatch.End();
         }

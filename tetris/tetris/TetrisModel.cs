@@ -37,7 +37,7 @@ namespace Tetris
         public const int BoardColumns = 10;
 
         // The size that each cell will be when drawn.
-        public  const int CellSizeInPixels = 32;
+        public const int CellSizeInPixels = 32;
         /// <summary>
         /// Holds the Color value of each cell on the Tetris board.
         /// TetrisModel.EmptySpaceColor means no color has been 
@@ -74,7 +74,7 @@ namespace Tetris
         /// <summary>
         /// An array of Colors representing each cell on the Tetris board. 
         /// </summary>
-        private List<Color> BoardData { get { return this.boardData; } }
+        public List<Color> BoardData { get { return this.boardData; } }
 
         /// <summary>
         /// The block currently being controlled by the player.
@@ -82,16 +82,16 @@ namespace Tetris
         public Block CurrentBlock
         {
             get { return this.currentBlock; }
-            set { this.currentBlock = value; }
-        }        
+            private set { this.currentBlock = value; }
+        }
 
         /// <summary>
-        /// Get the value of a cell on the Tetris board.
+        /// Returns the color of cell (row, column).
         /// </summary>
         /// <param name="row"> The row the cell is in (0-based). </param>
         /// <param name="column"> The column the cell is in (0-based). </param>
         /// <returns></returns>
-        public Color GetBoardData(int row, int column)
+        public Color GiveCellColor(int row, int column)
         {
 
             // Convert the 2D index into a 1D
@@ -101,7 +101,7 @@ namespace Tetris
             return this.boardData[index];
         }
 
-        private void SetBoardData(int row, int column, Color color)
+        private void ChangeCellColor(int row, int column, Color color)
         {
             // Convert the 2D index into a 1D
             int index = Utility.ConvertTo1DIndex(row, column, TetrisModel.BoardColumns);
@@ -117,16 +117,14 @@ namespace Tetris
         /// <param name="column"></param>
         /// <returns> True if the cell is filled with a part of a block, OR 
         ///     row or column exceeds the boundaries </returns>
-        bool IsCellFilled(int row, int column)
+        public bool IsCellFilled(int row, int column)
         {
+            // Check that a valid cell's state is being requested.
             if (row < 0 || row >= TetrisModel.BoardRows
                 || column < 0 || column >= TetrisModel.BoardColumns)
-                return true;
+                return true; // Cells that are out of bounds are considered filled.
 
-            if (this.GetBoardData(row, column) != TetrisModel.EmptySpaceColor)
-                return true;
-
-            return false;
+            return this.GiveCellColor(row, column) != TetrisModel.EmptySpaceColor;
         }
 
         /// <summary>
@@ -154,7 +152,7 @@ namespace Tetris
             this.CurrentBlock = CreateRandomBlock();
         }
 
-        public bool CanFit(int row, int column, Rotation rotation)
+        private bool RotationFitsAt(Rotation rotation, int row, int column)
         {
             // Loop through each cell of a rotation and see if its filled in
             // cells would collide with one of our filled in cells if the rotation
@@ -179,10 +177,10 @@ namespace Tetris
         {
             // Make sure the block can fit into the row we're about to
             // move it down to.
-            bool shouldLock = !this.CanFit(
+            bool shouldLock = !this.RotationFitsAt(
+             this.CurrentBlock.Rotation,
                 this.CurrentBlock.Row + 1,
-                this.CurrentBlock.Column,
-                this.CurrentBlock.Rotation);
+                this.CurrentBlock.Column);
 
             // If it can't fit, we'll need to lock it in at
             // it's current position.
@@ -200,6 +198,8 @@ namespace Tetris
         /// <summary>
         /// Locks a piece into it's current position on the board.
         /// </summary>
+        /// <remarks> This does not create a new block, nor does it remove
+        /// the current block. </remarks>
         private void LockCurrentBlock()
         {
             // Loop through each cell in CurrentBlock's current rotation and
@@ -210,7 +210,7 @@ namespace Tetris
                 {
                     if (this.CurrentBlock.Rotation.IsCellFilled(cellRow, cellColumn))
                     {
-                        this.SetBoardData(this.CurrentBlock.Row + cellRow,
+                        this.ChangeCellColor(this.CurrentBlock.Row + cellRow,
                             this.CurrentBlock.Column + cellColumn,
                                 this.CurrentBlock.Color);
                     }
@@ -220,9 +220,8 @@ namespace Tetris
 
         public bool MoveLeft()
         {
-            if (this.CanFit(this.CurrentBlock.Row,
-                    this.CurrentBlock.Column - 1,
-                    this.CurrentBlock.Rotation))
+            if (this.RotationFitsAt(this.CurrentBlock.Rotation, this.CurrentBlock.Row,
+                    this.CurrentBlock.Column - 1))
             {
                 this.CurrentBlock.Column--;
                 return true;
@@ -233,9 +232,8 @@ namespace Tetris
 
         public bool MoveRight()
         {
-            if (this.CanFit(this.CurrentBlock.Row,
-                    this.CurrentBlock.Column + 1,
-                    this.CurrentBlock.Rotation))
+            if (this.RotationFitsAt(this.CurrentBlock.Rotation, this.CurrentBlock.Row,
+                    this.CurrentBlock.Column + 1))
             {
                 this.CurrentBlock.Column++;
                 return true;
@@ -246,9 +244,8 @@ namespace Tetris
 
         public bool RotateLeft()
         {
-            if (this.CanFit(this.CurrentBlock.Row,
-                    this.CurrentBlock.Column,
-                    this.CurrentBlock.GetNextRotation()))
+            if (this.RotationFitsAt(this.CurrentBlock.GetNextRotation(), this.CurrentBlock.Row,
+                    this.CurrentBlock.Column))
             {
                 this.CurrentBlock.RotateLeft();
                 return true;
@@ -259,9 +256,8 @@ namespace Tetris
 
         public bool RotateRight()
         {
-            if (this.CanFit(this.CurrentBlock.Row,
-                    this.CurrentBlock.Column,
-                    this.CurrentBlock.GetNextRotation()))
+            if (this.RotationFitsAt(this.CurrentBlock.GetNextRotation(), this.CurrentBlock.Row,
+                    this.CurrentBlock.Column))
             {
                 this.CurrentBlock.RotateRight();
                 return true;
@@ -279,24 +275,26 @@ namespace Tetris
         {
             this.blockFactories.Add(factoryDelegate);
         }
+
         /// <summary>
         /// Create a Block using one of our factories.
         /// </summary>
         /// <returns></returns>
-        Block CreateRandomBlock()
+        private Block CreateRandomBlock()
         {
             Debug.Assert(this.blockFactories.Count != 0);
             int index = this.random.Next(0, this.blockFactories.Count);
 
             return this.blockFactories[index]();
         }
+
         /// <summary>
         /// How many cells in the specified row are filled in
         /// on the Tetris board.
         /// </summary>
         /// <param name="row"></param>
         /// <returns></returns>
-        private int GetFillCountOfRow(int row)
+        private int FillCountAtRow(int row)
         {
             int count = 0;
             for (int column = 0; column < TetrisModel.BoardColumns; column++)
@@ -307,6 +305,9 @@ namespace Tetris
             return count;
         }
 
+        /// <summary>
+        /// Remove all rows that are filled.
+        /// </summary>
         void RemoveFilledRows()
         {
             List<int> rowsToDelete = new List<int>();
@@ -315,7 +316,7 @@ namespace Tetris
             // is filled in for removal.
             for (int row = TetrisModel.BoardRows - 1; row >= 0; row--)
             {
-                if (GetFillCountOfRow(row) == TetrisModel.BoardColumns)
+                if (FillCountAtRow(row) == TetrisModel.BoardColumns)
                     rowsToDelete.Add(row);
                 // TO DO?: Break loop if fill count returns 0.
             }
@@ -337,14 +338,21 @@ namespace Tetris
             }
         }
 
-        public Point GetDropLocation()
+        /// <summary>
+        /// The location the current block would be if it were to
+        /// drop directly down until it it would lock into place.
+        /// </summary>
+        /// <returns></returns>
+        public Point DropPosition()
         {
             Point position = this.CurrentBlock.Position;
-
+            // Increase the current block's row and check to see if
+            // it can fit into the row after that position.
             for (; position.Y < TetrisModel.BoardRows; position.Y++)
             {
-                if (!this.CanFit(position.Y + 1, position.X, this.CurrentBlock.Rotation))
-                    break;
+                if (!this.RotationFitsAt(this.CurrentBlock.Rotation,
+                    position.Y + 1, position.X))
+                    break; // position's current value is the drop position.
             }
 
             return position;
