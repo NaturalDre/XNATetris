@@ -69,6 +69,14 @@ namespace Tetris
 
     sealed class Block
     {
+        // Directions a block can rotate.
+        public enum RotationDirections
+        {
+            Right,
+            Left
+        };
+
+
         // public  Func<Block> Factory();
         /// <summary>
         /// The amount of different rotations a block has.
@@ -87,7 +95,7 @@ namespace Tetris
         /// <summary>
         /// The current rotation this object is presenting.
         /// </summary>
-        private int currentRotation;
+        private int currentRotationID;
         private Point position = Point.Zero;
 
         /// <summary>
@@ -107,7 +115,7 @@ namespace Tetris
                 this.rotations.Add(new Rotation());
 
             this.size = size;
-            this.CurrentRotationID = 0;
+            this.ChangeCurrentRotation(0);
             // Initial spawning location
             this.Column = 3;
         }
@@ -116,8 +124,7 @@ namespace Tetris
         {
             get { return this.color; }
         }
-        //protected TetrisGame Game { get { return this.tetrisGame; } }
-        //public int RotationCount { get { return this.Rotations.Count; } }
+
         /// <summary>
         /// Returns a list containing representations of each rotation of this block.
         /// </summary>
@@ -125,23 +132,29 @@ namespace Tetris
 
 
         /// <summary>
-        /// The current rotation of the piece.
+        /// The ID used to identify the rotation we're currently representing.
         /// </summary>
-        public int CurrentRotationID
+        private int CurrentRotationID { get { return this.currentRotationID; } }
+
+        private void ChangeCurrentRotation(int rotationID)
         {
-            get { return this.currentRotation; }
-            set { this.currentRotation = Block.EnforceRotationIDLimits(value); }
+            this.currentRotationID = Block.EnforceRotationIDLimits(rotationID);
         }
 
-        public Rotation Rotation
-        {
-            get { return this.Rotations[this.CurrentRotationID]; }
-        }
+        /// <summary>
+        /// Returns an object representing the current rotation.
+        /// </summary>
+        public Rotation CurrentRotation { get { return this.Rotations[this.CurrentRotationID]; } }
 
-        public Rotation GetNextRotation()
-        {
 
-            int id = Block.EnforceRotationIDLimits(this.CurrentRotationID + 1);
+        public Rotation GetNextRotation(RotationDirections direction)
+        {
+            int id = this.CurrentRotationID;
+            if (direction == RotationDirections.Right)
+                id = Block.EnforceRotationIDLimits(id + 1);
+            else if (direction == RotationDirections.Left)
+                id = Block.EnforceRotationIDLimits(id - 1);
+
             return this.Rotations[id];
         }
 
@@ -158,9 +171,13 @@ namespace Tetris
         {
             // There are no IDs below 0
             if (id < 0)
+                // If the requested ID is below zero, we want to
+                // return the maximum rotation ID.
                 id = Block.RotationsPerBlock - 1;
             // There are no IDs >= the amount of rotations
             else if (id >= Block.RotationsPerBlock)
+                // If the requested ID is greater than the maximum
+                // rotation ID, we want to return the lowest rotation ID.
                 id = 0;
 
             return id;
@@ -183,11 +200,9 @@ namespace Tetris
             set { this.position.X = value; }
         }
 
-        public Point Position
-        {
-            get { return this.position; }
-            set { this.position = value; }
-        }
+        public void MoveTo(Point position) { this.position = position; }
+
+        public Point Location { get { return this.position; } }
 
 
         /// <summary>
@@ -199,14 +214,14 @@ namespace Tetris
         /// </summary>
         public void RotateLeft()
         {
-            --this.CurrentRotationID;
+            this.ChangeCurrentRotation(this.CurrentRotationID - 1);
         }
         /// <summary>
         /// Rotate the block clockwise. WIll perform checks and wallkicks.
         /// </summary>
         public void RotateRight()
         {
-            ++this.CurrentRotationID;
+            this.ChangeCurrentRotation(this.CurrentRotationID + 1);
         }
         /// <summary>
         /// Is position (row, column) filled in?
@@ -216,7 +231,7 @@ namespace Tetris
         /// <returns></returns>
         public bool IsCellFilled(int row, int column)
         {
-            return this.Rotation.IsCellFilled(row, column);
+            return this.CurrentRotation.IsCellFilled(row, column);
         }
     }
 }

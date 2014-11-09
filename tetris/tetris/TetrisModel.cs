@@ -17,7 +17,7 @@ namespace Tetris
         /// <summary>
         /// How much time should pass for gravity to be applied.
         /// </summary>
-        private static readonly TimeSpan GravityTimeSpan;
+        private static readonly TimeSpan GravityCooldown;
 
         /// <summary>
         /// The color that represents an empty space on the Tetris board.
@@ -49,15 +49,16 @@ namespace Tetris
         /// <summary>
         /// Time remaining until gravity is applied.
         /// </summary>
-        private TimeSpan gravityTimer = TetrisModel.GravityTimeSpan;
+        private TimeSpan gravityTimer = TetrisModel.GravityCooldown;
 
         private Block currentBlock = null;
         private List<Func<Block>> blockFactories = new List<Func<Block>>();
         private Random random = new Random();
+        private bool canSoftDrop = true;
 
         static TetrisModel()
         {
-            TetrisModel.GravityTimeSpan = new TimeSpan(0, 0, 1);
+            TetrisModel.GravityCooldown = new TimeSpan(0, 0, 1);
             TetrisModel.EmptySpaceColor = Color.Magenta;
 
         }
@@ -91,7 +92,7 @@ namespace Tetris
         /// <param name="row"> The row the cell is in (0-based). </param>
         /// <param name="column"> The column the cell is in (0-based). </param>
         /// <returns></returns>
-        public Color GiveCellColor(int row, int column)
+        public Color GetCellColor(int row, int column)
         {
 
             // Convert the 2D index into a 1D
@@ -124,7 +125,7 @@ namespace Tetris
                 || column < 0 || column >= TetrisModel.BoardColumns)
                 return true; // Cells that are out of bounds are considered filled.
 
-            return this.GiveCellColor(row, column) != TetrisModel.EmptySpaceColor;
+            return this.GetCellColor(row, column) != TetrisModel.EmptySpaceColor;
         }
 
         /// <summary>
@@ -140,7 +141,7 @@ namespace Tetris
                 ApplyGravity();
                 // We add timeRemaining to gravityTimeSpan so we don't throw away any time.
                 // (timeRemaining could have a negative value).
-                gravityTimer = TetrisModel.GravityTimeSpan + gravityTimer;
+                gravityTimer = TetrisModel.GravityCooldown + gravityTimer;
                 Console.WriteLine("Gravity Applied.");
             }
 
@@ -150,6 +151,11 @@ namespace Tetris
         public void StartGame()
         {
             this.CurrentBlock = CreateRandomBlock();
+        }
+
+        void ResetGravityTimer()
+        {
+            this.gravityTimer = TetrisModel.GravityCooldown;
         }
 
         private bool RotationFitsAt(Rotation rotation, int row, int column)
@@ -178,7 +184,7 @@ namespace Tetris
             // Make sure the block can fit into the row we're about to
             // move it down to.
             bool shouldLock = !this.RotationFitsAt(
-             this.CurrentBlock.Rotation,
+             this.CurrentBlock.CurrentRotation,
                 this.CurrentBlock.Row + 1,
                 this.CurrentBlock.Column);
 
@@ -193,6 +199,8 @@ namespace Tetris
             }
             else // Otherwise, we can move it down one row.
                 this.CurrentBlock.Row++;
+
+            this.canSoftDrop = true;
         }
 
         /// <summary>
@@ -208,7 +216,7 @@ namespace Tetris
             {
                 for (int cellColumn = 0; cellColumn < Rotation.FilledCellsPerBlock; cellColumn++)
                 {
-                    if (this.CurrentBlock.Rotation.IsCellFilled(cellRow, cellColumn))
+                    if (this.CurrentBlock.CurrentRotation.IsCellFilled(cellRow, cellColumn))
                     {
                         this.ChangeCellColor(this.CurrentBlock.Row + cellRow,
                             this.CurrentBlock.Column + cellColumn,
@@ -220,7 +228,7 @@ namespace Tetris
 
         public bool MoveLeft()
         {
-            if (this.RotationFitsAt(this.CurrentBlock.Rotation, this.CurrentBlock.Row,
+            if (this.RotationFitsAt(this.CurrentBlock.CurrentRotation, this.CurrentBlock.Row,
                     this.CurrentBlock.Column - 1))
             {
                 this.CurrentBlock.Column--;
@@ -232,7 +240,7 @@ namespace Tetris
 
         public bool MoveRight()
         {
-            if (this.RotationFitsAt(this.CurrentBlock.Rotation, this.CurrentBlock.Row,
+            if (this.RotationFitsAt(this.CurrentBlock.CurrentRotation, this.CurrentBlock.Row,
                     this.CurrentBlock.Column + 1))
             {
                 this.CurrentBlock.Column++;
@@ -244,8 +252,9 @@ namespace Tetris
 
         public bool RotateLeft()
         {
-            if (this.RotationFitsAt(this.CurrentBlock.GetNextRotation(), this.CurrentBlock.Row,
-                    this.CurrentBlock.Column))
+            if (this.RotationFitsAt(
+                this.CurrentBlock.GetNextRotation(Block.RotationDirections.Left),
+                this.CurrentBlock.Row, this.CurrentBlock.Column))
             {
                 this.CurrentBlock.RotateLeft();
                 return true;
@@ -256,14 +265,41 @@ namespace Tetris
 
         public bool RotateRight()
         {
-            if (this.RotationFitsAt(this.CurrentBlock.GetNextRotation(), this.CurrentBlock.Row,
-                    this.CurrentBlock.Column))
+            if (this.RotationFitsAt(
+                this.CurrentBlock.GetNextRotation(Block.RotationDirections.Right),
+                this.CurrentBlock.Row, this.CurrentBlock.Column))
             {
                 this.CurrentBlock.RotateRight();
                 return true;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Drops the block as far down as possible, but does
+        /// not immedietly apply gravity. Gravity timer resets.
+        /// </summary>
+        /// <remarks> Once a soft drop is performed, another cannot occur
+        /// until gravity is applied.</remarks>
+        public void SoftDrop()
+        {
+            if (this.canSoftDrop)
+            {
+                this.CurrentBlock.MoveTo(FindDropPosition());
+                this.ResetGravityTimer();
+                this.canSoftDrop = false;
+            }
+        }
+
+        /// <summary>
+        /// Drop the block as far down as possible and
+        /// immedietly apply gravity.
+        /// </summary>
+        public void HardDrop()
+        {
+            this.CurrentBlock.MoveTo(FindDropPosition());
+            ApplyGravity();
         }
 
         /// <summary>
@@ -343,14 +379,14 @@ namespace Tetris
         /// drop directly down until it it would lock into place.
         /// </summary>
         /// <returns></returns>
-        public Point DropPosition()
+        public Point FindDropPosition()
         {
-            Point position = this.CurrentBlock.Position;
+            Point position = this.CurrentBlock.Location;
             // Increase the current block's row and check to see if
             // it can fit into the row after that position.
             for (; position.Y < TetrisModel.BoardRows; position.Y++)
             {
-                if (!this.RotationFitsAt(this.CurrentBlock.Rotation,
+                if (!this.RotationFitsAt(this.CurrentBlock.CurrentRotation,
                     position.Y + 1, position.X))
                     break; // position's current value is the drop position.
             }

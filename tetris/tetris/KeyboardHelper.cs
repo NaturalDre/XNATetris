@@ -52,17 +52,17 @@ namespace BytesOfPi.Input
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public bool WasKeyJustPressed(Keys key)
+        public bool IsKeyJustPressed(Keys key)
         {
             return PreviousKeyboardState.IsKeyUp(key) &&
                 CurrentKeyboardState.IsKeyDown(key);
         }
         /// <summary>
-        /// Wasthe key down on the previous state, but is now up?
+        /// Was the key down on the previous state, but is now up?
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public bool WasKeyJustReleased(Keys key)
+        public bool IsKeyJustReleased(Keys key)
         {
             return PreviousKeyboardState.IsKeyDown(key) &&
                 CurrentKeyboardState.IsKeyUp(key);
@@ -107,7 +107,7 @@ namespace BytesOfPi.Input
         /// <remarks> This exists because I'd have to track every key otherwise,
         /// and in most cases only a few keys need to be tracked for keyboard repeats.
         /// </remarks>
-        public void trackKeyForHardRepeats(Keys key)
+        public void TrackKeyForHardRepeats(Keys key)
         {
             if (!trackedKeys.Contains(key))
             {

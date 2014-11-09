@@ -85,17 +85,17 @@ namespace Tetris
                                 row * TetrisModel.CellSizeInPixels,
                                 TetrisModel.CellSizeInPixels,
                                 TetrisModel.CellSizeInPixels),
-                            this.tetrisModel.GiveCellColor(row, column));
+                            this.tetrisModel.GetCellColor(row, column));
                 }
             }
 
             // Draw the "ghost" piece.
-            Point ghostPosition = this.tetrisModel.DropPosition();
+            Point ghostPosition = this.tetrisModel.FindDropPosition();
             DrawRotation(
-                this.tetrisModel.CurrentBlock.Rotation,
+                this.tetrisModel.CurrentBlock.CurrentRotation,
                 this.tetrisModel.CurrentBlock.Size,
                 ghostPosition,
-                Color.White);
+                Color.White * 0.15f);
 
             // Draw the piece being controlled by the player.
             DrawRotation(this.tetrisModel.CurrentBlock);
@@ -140,9 +140,9 @@ namespace Tetris
         private void DrawRotation(Block block)
         {
             DrawRotation(
-                block.Rotation,
+                block.CurrentRotation,
                 block.Size,
-                block.Position,
+                block.Location,
                 block.Color);
         }
     }

@@ -56,10 +56,16 @@ namespace Tetris
 
             // TODO: use this.Content to load your game content here
             this.tetrisModel = new TetrisModel();
-            this.tetrisModel.AddBlockFactory(
-                new Func<Block>(BlockFactories.CreateTBlock));
-            this.tetrisModel.AddBlockFactory(
-                new Func<Block>(BlockFactories.CreateLBlock));
+
+            this.tetrisModel.AddBlockFactory(BlockFactories.CreateIBlock);
+            this.tetrisModel.AddBlockFactory(BlockFactories.CreateJBlock);
+            this.tetrisModel.AddBlockFactory(BlockFactories.CreateLBlock);
+            this.tetrisModel.AddBlockFactory(BlockFactories.CreateOBlock);
+            this.tetrisModel.AddBlockFactory(BlockFactories.CreateTBlock);
+            this.tetrisModel.AddBlockFactory(BlockFactories.CreateSBlock);
+            this.tetrisModel.AddBlockFactory(BlockFactories.CreateZBlock);
+
+
             this.tetrisModel.StartGame();
 
             this.tetrisView = new TetrisView(this, this.tetrisModel);
@@ -90,7 +96,7 @@ namespace Tetris
             // TODO: Add your update logic here
             this.tetrisModel.Update(gameTime);
             this.tetrisController.Update(gameTime);
-            
+
             base.Update(gameTime);
         }
 
