@@ -13,7 +13,7 @@ namespace Tetris
     /// </summary>
     /// <remarks> This class keeps track of all the filled-in
     /// points of a rotation. </remarks>
-    public class Rotation
+    public sealed class Rotation
     {
         List<Point> filledCells;
         int size = 0;
@@ -106,7 +106,7 @@ namespace Tetris
     //    }
     //}
 
-    sealed class Block
+    public sealed class Block
     {
         // Directions a block can rotate.
         public enum RotationDirections
