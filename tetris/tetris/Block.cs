@@ -9,63 +9,102 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Tetris
 {
     /// <summary>
-    /// Represents a rotation. It contains the point for each filled spot on
-    /// a block's grid.
+    /// Data representation of a single rotation.
     /// </summary>
+    /// <remarks> This class keeps track of all the filled-in
+    /// points of a rotation. </remarks>
     public class Rotation
     {
-        /// <summary>
-        /// The amount of points filled with a color in a tetris block (Always 4).
-        /// </summary>
-        public const int FilledCellsPerBlock = 4;
-        private List<Point> filledCells;
+        List<Point> filledCells;
+        int size = 0;
 
-        public Rotation()
+        public Rotation(List<Point> filledCells, int size)
         {
-            this.filledCells =
-                new List<Point>(
-                    Enumerable.Repeat<Point>(Point.Zero, FilledCellsPerBlock));
+            Debug.Assert(filledCells.Count != 0);
+            this.filledCells = filledCells;
+            this.size = size;
         }
 
-        public Rotation(Rotation other)
-        {
-            this.filledCells = new List<Point>(other.filledCells);
-        }
+        public int FilledCellCount { get { return this.filledCells.Count; } }
+        public int Size { get { return this.size; } }
 
         /// <summary>
-        /// Checks whether a cell is filled. (0-based)
+        /// Is (row, column) a filled position on this rotation?
         /// </summary>
-        /// <param name="row"> The row of the cell. </param>
-        /// <param name="column"> The column of the cell. </param>
-        /// <returns></returns>
         public bool IsCellFilled(int row, int column)
         {
             return this.filledCells.Contains(new Point(column, row));
         }
 
         /// <summary>
-        /// Move 1 of the 4 filled cells to another location in the rotation grid. (0-based)
+        /// Is (row, column) a filled position on this rotation?
         /// </summary>
-        /// <param name="cellIndex"> The cell you want to move. </param>
-        /// <param name="moveToCell"> Where you want the cell moved to. </param>
-        public void SetFilled(int cellIndex, Point moveToCell)
+        public bool IsCellFilled(Point cellPosition)
         {
-            Debug.Assert(cellIndex >= 0 && cellIndex < 4);
-            this.filledCells[cellIndex] = moveToCell;
-        }
-
-        /// <summary>
-        /// Move 1 of the 4 filled cells to another location in the rotation grid. (0-based)
-        /// </summary>
-        /// <param name="cellIndex"> The cell you want to move. </param>
-        /// <param name="moveToRow"> The row you want to move it to. </param>
-        /// <param name="moveToColumn"> The column you want to move it to. </param>
-        public void MoveFilledCell(int cellIndex, int moveToRow, int moveToColumn)
-        {
-            Debug.Assert(cellIndex >= 0 && cellIndex < 4);
-            this.filledCells[cellIndex] = new Point(moveToColumn, moveToRow);
+            return this.IsCellFilled(cellPosition.Y, cellPosition.X);
         }
     }
+
+
+
+    ///// <summary>
+    ///// Represents a rotation. It contains the point for each filled spot on
+    ///// a block's grid.
+    ///// </summary>
+    //public class Rotation
+    //{
+    //    /// <summary>
+    //    /// The amount of points filled with a color in a tetris block (Always 4).
+    //    /// </summary>
+    //    public const int FilledCellsPerBlock = 4;
+    //    private List<Point> filledCells;
+
+    //    public Rotation()
+    //    {
+    //        this.filledCells =
+    //            new List<Point>(
+    //                Enumerable.Repeat<Point>(Point.Zero, FilledCellsPerBlock));
+    //    }
+
+    //    public Rotation(Rotation other)
+    //    {
+    //        this.filledCells = new List<Point>(other.filledCells);
+    //    }
+
+    //    /// <summary>
+    //    /// Checks whether a cell is filled. (0-based)
+    //    /// </summary>
+    //    /// <param name="row"> The row of the cell. </param>
+    //    /// <param name="column"> The column of the cell. </param>
+    //    /// <returns></returns>
+    //    public bool IsCellFilled(int row, int column)
+    //    {
+    //        return this.filledCells.Contains(new Point(column, row));
+    //    }
+
+    //    /// <summary>
+    //    /// Move 1 of the 4 filled cells to another location in the rotation grid. (0-based)
+    //    /// </summary>
+    //    /// <param name="cellIndex"> The cell you want to move. </param>
+    //    /// <param name="moveToCell"> Where you want the cell moved to. </param>
+    //    public void SetFilled(int cellIndex, Point moveToCell)
+    //    {
+    //        Debug.Assert(cellIndex >= 0 && cellIndex < 4);
+    //        this.filledCells[cellIndex] = moveToCell;
+    //    }
+
+    //    /// <summary>
+    //    /// Move 1 of the 4 filled cells to another location in the rotation grid. (0-based)
+    //    /// </summary>
+    //    /// <param name="cellIndex"> The cell you want to move. </param>
+    //    /// <param name="moveToRow"> The row you want to move it to. </param>
+    //    /// <param name="moveToColumn"> The column you want to move it to. </param>
+    //    public void MoveFilledCell(int cellIndex, int moveToRow, int moveToColumn)
+    //    {
+    //        Debug.Assert(cellIndex >= 0 && cellIndex < 4);
+    //        this.filledCells[cellIndex] = new Point(moveToColumn, moveToRow);
+    //    }
+    //}
 
     sealed class Block
     {
@@ -91,7 +130,7 @@ namespace Tetris
         /// <summary>
         /// A list of all possible rotations;
         /// </summary>
-        private List<Rotation> rotations = new List<Rotation>();
+        private List<Rotation> rotationList = new List<Rotation>();
         /// <summary>
         /// The current rotation this object is presenting.
         /// </summary>
@@ -104,20 +143,40 @@ namespace Tetris
         /// <param name="game"> Instance of the TetrisGame object. </param>
         /// <param name="size"> The amount of Rows and Columns each rotation has. </param>
         /// <param name="rotationCount"> The amount of rotations this block has. </param>
-        public Block(Color color, int size)
+        private Block(List<Rotation> rotations, Color color, int size)
         {
             //this.tetrisGame = game;
 
             Debug.Assert(color != TetrisModel.EmptySpaceColor);
+            Debug.Assert(rotations.Count != 0);
+
+            foreach (var rotationItem in rotations)
+            {
+                if (rotationItem.Size != size)
+                    throw new Exception("All rotations do not match the block size.");
+            }
+
             this.color = color;
-
-            for (int i = 0; i < Block.RotationsPerBlock; i++)
-                this.rotations.Add(new Rotation());
-
+            this.rotationList = rotations;
             this.size = size;
             this.ChangeCurrentRotation(0);
             // Initial spawning location
             this.Column = 3;
+        }
+
+        public Block(Color color, int size, params List<Point>[] lists)
+        {
+            Debug.Assert(color != TetrisModel.EmptySpaceColor);
+            Debug.Assert(lists.Length != 0);
+
+            this.color = color;
+            this.size = size;
+
+            foreach (var list in lists)
+            {
+                Debug.Assert(list.Count != 0);
+                this.rotationList.Add(new Rotation(list, this.size));
+            }
         }
 
         public Color Color
@@ -128,7 +187,7 @@ namespace Tetris
         /// <summary>
         /// Returns a list containing representations of each rotation of this block.
         /// </summary>
-        public List<Rotation> Rotations { get { return this.rotations; } }
+        public List<Rotation> Rotations { get { return this.rotationList; } }
 
 
         /// <summary>

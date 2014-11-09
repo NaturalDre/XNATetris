@@ -10,274 +10,314 @@ namespace Tetris
     {
         public static Block CreateIBlock()
         {
-            Block block = new Block(Color.Cyan, 4);
-
             // - - - -
             // X X X X
             // - - - -
             // - - - - 
-            block.Rotations[0].SetFilled(0, new Point(0, 1));
-            block.Rotations[0].SetFilled(1, new Point(1, 1));
-            block.Rotations[0].SetFilled(2, new Point(2, 1));
-            block.Rotations[0].SetFilled(3, new Point(3, 1));
+            List<Point> firstRotation = new List<Point>()
+            {
+                new Point(0, 1), new Point(1, 1),
+                new Point(2, 1), new Point(3, 1)
+            };
 
             // - - X -
             // - - X -
             // - - X -
             // - - X -
-            block.Rotations[1].SetFilled(0, new Point(2, 0));
-            block.Rotations[1].SetFilled(1, new Point(2, 1));
-            block.Rotations[1].SetFilled(2, new Point(2, 2));
-            block.Rotations[1].SetFilled(3, new Point(2, 3));
+            List<Point> secondRotation = new List<Point>()
+            {
+                new Point(2, 0), new Point(2, 1),
+                new Point(2, 2), new Point(2, 3)
+            };
 
             // - - - -
             // - - - - 
             // X X X X
             // - - - -
-            block.Rotations[2].SetFilled(0, new Point(0, 2));
-            block.Rotations[2].SetFilled(1, new Point(1, 2));
-            block.Rotations[2].SetFilled(2, new Point(2, 2));
-            block.Rotations[2].SetFilled(3, new Point(3, 2));
+            List<Point> thirdRotation = new List<Point>()
+            {
+                new Point(0, 2), new Point(1, 2),
+                new Point(2, 2), new Point(3, 2)
+            };
 
             // - X - - 
             // - X - -
             // - X - - 
             // - X - -
-            block.Rotations[3].SetFilled(0, new Point(1, 0));
-            block.Rotations[3].SetFilled(1, new Point(1, 1));
-            block.Rotations[3].SetFilled(2, new Point(1, 2));
-            block.Rotations[3].SetFilled(3, new Point(1, 3));
+            List<Point> fourthRotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(1, 1),
+                new Point(1, 2), new Point(1, 3)
+            };
+
+            Block block = new Block(Color.Cyan, 4,
+                firstRotation,
+                secondRotation,
+                thirdRotation,
+                fourthRotation);
 
             return block;
         }
 
         public static Block CreateJBlock()
         {
-            Block block = new Block(Color.Blue, 3);
-
             // X - -
             // X X X 
             // - - -
-            block.Rotations[0].SetFilled(0, new Point(0, 0));
-            block.Rotations[0].SetFilled(1, new Point(0, 1));
-            block.Rotations[0].SetFilled(2, new Point(1, 1));
-            block.Rotations[0].SetFilled(3, new Point(2, 1));
+            List<Point> firstRotation = new List<Point>
+            { 
+                new Point(0,0), new Point(0,1), 
+                new Point(1,1), new Point(2,1)
+            };
 
             // - X X 
             // - X -
             // - X -
-            block.Rotations[1].SetFilled(0, new Point(1, 0));
-            block.Rotations[1].SetFilled(1, new Point(2, 0));
-            block.Rotations[1].SetFilled(2, new Point(1, 1));
-            block.Rotations[1].SetFilled(3, new Point(1, 2));
+            List<Point> secondRotation = new List<Point>
+            { 
+                new Point(1,0), new Point(2,0), 
+                new Point(1,1), new Point(1,2)
+            };
 
             // - - -
             // X X X
             // - - X
-            block.Rotations[2].SetFilled(0, new Point(0, 1));
-            block.Rotations[2].SetFilled(1, new Point(1, 1));
-            block.Rotations[2].SetFilled(2, new Point(2, 1));
-            block.Rotations[2].SetFilled(3, new Point(2, 2));
+            List<Point> thirdRotation = new List<Point>
+            { 
+                new Point(0, 1), new Point(1, 1),
+                new Point(2, 1), new Point(2, 2)
+            };
 
             // - X -
             // - X -
-            // X X -
-            block.Rotations[3].SetFilled(0, new Point(1, 0));
-            block.Rotations[3].SetFilled(1, new Point(1, 1));
-            block.Rotations[3].SetFilled(2, new Point(1, 2));
-            block.Rotations[3].SetFilled(3, new Point(0, 2));
+            // X X 
+            List<Point> fourthRotation = new List<Point>
+            { 
+                new Point(1, 0), new Point(1, 1),
+                new Point(1, 2), new Point(0, 2)
+            };
+
+            Block block = new Block(Color.Blue, 3,
+                firstRotation,
+                secondRotation,
+                thirdRotation,
+                fourthRotation);
 
             return block;
         }
 
         public static Block CreateLBlock()
         {
-            Block block = new Block(Color.Orange, 3);
-
             // - - -
             // - - X
             // X X X
-            block.Rotations[0].SetFilled(0, new Point(2, 0));
-            block.Rotations[0].SetFilled(1, new Point(0, 1));
-            block.Rotations[0].SetFilled(2, new Point(1, 1));
-            block.Rotations[0].SetFilled(3, new Point(2, 1));
+            List<Point> firstRotation = new List<Point>()
+            {
+                new Point(2, 0), new Point(0, 1),
+                new Point(1, 1), new Point(2, 1)
+            };
 
             // - X -
             // - X -
             // - X X
-            block.Rotations[1].SetFilled(0, new Point(1, 0));
-            block.Rotations[1].SetFilled(1, new Point(1, 1));
-            block.Rotations[1].SetFilled(2, new Point(1, 2));
-            block.Rotations[1].SetFilled(3, new Point(2, 2));
+            List<Point> secondRotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(1, 1),
+                new Point(1, 2), new Point(2, 2)
+            };
 
             // - - -
             // X X X
             // X - -
-            block.Rotations[2].SetFilled(0, new Point(0, 1));
-            block.Rotations[2].SetFilled(1, new Point(1, 1));
-            block.Rotations[2].SetFilled(2, new Point(2, 1));
-            block.Rotations[2].SetFilled(3, new Point(0, 2));
+            List<Point> thirdRotation = new List<Point>()
+            {
+                new Point(0, 1), new Point(1, 1),
+                new Point(2, 1), new Point(0, 2)
+            };
 
             // X X -
             // - X -
-            // - X
-            block.Rotations[3].SetFilled(0, new Point(0, 0));
-            block.Rotations[3].SetFilled(1, new Point(1, 0));
-            block.Rotations[3].SetFilled(2, new Point(1, 1));
-            block.Rotations[3].SetFilled(3, new Point(1, 2));
+            // - X -
+            List<Point> fourthRotation = new List<Point>()
+            {
+                new Point(0, 0), new Point(1, 0),
+                new Point(1, 1), new Point(1, 2)
+            };
+
+            Block block = new Block(Color.Orange, 3,
+                firstRotation,
+                secondRotation,
+                thirdRotation,
+                fourthRotation);
 
             return block;
         }
 
         public static Block CreateOBlock()
         {
-            Block block = new Block(Color.Yellow, 4);
+
 
             // - X X - 
             // - X X -
             // - - - -
-            block.Rotations[0].SetFilled(0, new Point(1, 0));
-            block.Rotations[0].SetFilled(1, new Point(2, 0));
-            block.Rotations[0].SetFilled(2, new Point(1, 1));
-            block.Rotations[0].SetFilled(3, new Point(2, 1));
+            List<Point> rotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(2, 0),
+                new Point(1, 1), new Point(2, 1)
+            };
+
 
             // Lazy way of doing it for now. All rotations for
             // the O block are the same...
-            block.Rotations[1].SetFilled(0, new Point(1, 0));
-            block.Rotations[1].SetFilled(1, new Point(2, 0));
-            block.Rotations[1].SetFilled(2, new Point(1, 1));
-            block.Rotations[1].SetFilled(3, new Point(2, 1));
-
-            block.Rotations[2].SetFilled(0, new Point(1, 0));
-            block.Rotations[2].SetFilled(1, new Point(2, 0));
-            block.Rotations[2].SetFilled(2, new Point(1, 1));
-            block.Rotations[2].SetFilled(3, new Point(2, 1));
-
-            block.Rotations[3].SetFilled(0, new Point(1, 0));
-            block.Rotations[3].SetFilled(1, new Point(2, 0));
-            block.Rotations[3].SetFilled(2, new Point(1, 1));
-            block.Rotations[3].SetFilled(3, new Point(2, 1));
+            Block block = new Block(Color.Yellow, 4,
+                rotation,
+                rotation,
+                rotation,
+                rotation);
 
             return block;
         }
-        
+
         public static Block CreateSBlock()
         {
-            Block block = new Block(Color.Green, 3);
-
             // - X X
             // X X -
             // - - -
-            block.Rotations[0].SetFilled(0, new Point(1, 0));
-            block.Rotations[0].SetFilled(1, new Point(2, 0));
-            block.Rotations[0].SetFilled(2, new Point(0, 1));
-            block.Rotations[0].SetFilled(3, new Point(1, 1));
+            List<Point> firstRotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(2, 0),
+                new Point(0, 1), new Point(1, 1)
+            };
 
             // - X -
             // - X X
             // - - X
-            block.Rotations[1].SetFilled(0, new Point(1, 0));
-            block.Rotations[1].SetFilled(1, new Point(1, 1));
-            block.Rotations[1].SetFilled(2, new Point(2, 1));
-            block.Rotations[1].SetFilled(3, new Point(2, 2));
+            List<Point> secondRotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(1, 1),
+                new Point(2, 1), new Point(2, 2)
+            };
 
             // - - -
             // - X X
             // X X -
-            block.Rotations[2].SetFilled(0, new Point(1, 1));
-            block.Rotations[2].SetFilled(1, new Point(2, 1));
-            block.Rotations[2].SetFilled(2, new Point(0, 2));
-            block.Rotations[2].SetFilled(3, new Point(1, 2));
+            List<Point> thirdRotation = new List<Point>()
+            {
+                new Point(1, 1), new Point(2, 1),
+                new Point(0, 2), new Point(1, 2)
+            };
 
             // X - -
             // X X -
             // - X -
-            block.Rotations[3].SetFilled(0, new Point(0, 0));
-            block.Rotations[3].SetFilled(1, new Point(0, 1));
-            block.Rotations[3].SetFilled(2, new Point(1, 1));
-            block.Rotations[3].SetFilled(3, new Point(1, 2));
+            List<Point> fourthRotation = new List<Point>()
+            {
+                new Point(0, 0), new Point(0, 1),
+                new Point(1, 1), new Point(1, 2)
+            };
+
+            Block block = new Block(Color.Green, 3,
+                firstRotation,
+                secondRotation,
+                thirdRotation,
+                fourthRotation);
 
             return block;
         }
 
         public static Block CreateTBlock()
         {
-            Block block = new Block(Color.Purple, 3);
-
             // - X -
             // X X X
             // - - -
-            block.Rotations[0].SetFilled(0, new Point(1, 0));
-            block.Rotations[0].SetFilled(1, new Point(0, 1));
-            block.Rotations[0].SetFilled(2, new Point(1, 1));
-            block.Rotations[0].SetFilled(3, new Point(2, 1));
+            List<Point> firstRotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(0, 1),
+                new Point(1, 1), new Point(2, 1)
+            };
 
             // - X -
             // - X X
             // - X -
-            block.Rotations[1].SetFilled(0, new Point(1, 0));
-            block.Rotations[1].SetFilled(1, new Point(1, 1));
-            block.Rotations[1].SetFilled(2, new Point(2, 1));
-            block.Rotations[1].SetFilled(3, new Point(1, 2));
+            List<Point> secondRotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(1, 1),
+                new Point(2, 1), new Point(1, 2)
+            };
 
             // - - -
             // X X X
             // - X -
-            block.Rotations[2].SetFilled(0, new Point(0, 1));
-            block.Rotations[2].SetFilled(1, new Point(1, 1));
-            block.Rotations[2].SetFilled(2, new Point(2, 1));
-            block.Rotations[2].SetFilled(3, new Point(1, 2));
+            List<Point> thirdRotation = new List<Point>()
+            {
+                new Point(0, 1), new Point(1, 1),
+                new Point(2, 1), new Point(1, 2)
+            };
 
             // - X -
             // X X -
             // - X
-            block.Rotations[3].SetFilled(0, new Point(1, 0));
-            block.Rotations[3].SetFilled(1, new Point(0, 1));
-            block.Rotations[3].SetFilled(2, new Point(1, 1));
-            block.Rotations[3].SetFilled(3, new Point(1, 2));
+            List<Point> fourthRotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(0, 1),
+                new Point(1, 1), new Point(1, 2)
+            };
+
+            Block block = new Block(Color.Purple, 3,
+                firstRotation,
+                secondRotation,
+                thirdRotation,
+                fourthRotation);
 
             return block;
         }
 
         public static Block CreateZBlock()
         {
-            Block block = new Block(Color.Red, 3);
-
-
             // X X -
             // - X X
             // - - -
-            block.Rotations[0].SetFilled(0, new Point(0, 0));
-            block.Rotations[0].SetFilled(1, new Point(1, 0));
-            block.Rotations[0].SetFilled(2, new Point(1, 1));
-            block.Rotations[0].SetFilled(3, new Point(2, 1));
+            List<Point> firstRotation = new List<Point>()
+            {
+                new Point(0, 0), new Point(1, 0),
+                new Point(1, 1), new Point(2, 1)
+            };
 
             // - - X
             // - X X
             // - X -
-            block.Rotations[1].SetFilled(0, new Point(2, 0));
-            block.Rotations[1].SetFilled(1, new Point(1, 1));
-            block.Rotations[1].SetFilled(2, new Point(2, 1));
-            block.Rotations[1].SetFilled(3, new Point(1, 2));
+            List<Point> secondRotation = new List<Point>()
+            {
+                new Point(2, 0), new Point(1, 1),
+                new Point(2, 1), new Point(1, 2)
+            };
 
             // - - -
             // X X - 
             // - X X
-            block.Rotations[2].SetFilled(0, new Point(0, 1));
-            block.Rotations[2].SetFilled(1, new Point(1, 1));
-            block.Rotations[2].SetFilled(2, new Point(1, 2));
-            block.Rotations[2].SetFilled(3, new Point(2, 2));
-
+            List<Point> thirdRotation = new List<Point>()
+            {
+                new Point(0, 1), new Point(1, 1),
+                new Point(1, 2), new Point(2, 2)
+            };
+            
             // - X -
             // X X -
             // X - -
-            block.Rotations[3].SetFilled(0, new Point(1, 0));
-            block.Rotations[3].SetFilled(1, new Point(0, 1));
-            block.Rotations[3].SetFilled(2, new Point(1, 1));
-            block.Rotations[3].SetFilled(3, new Point(0, 2));
+            List<Point> fourthRotation = new List<Point>()
+            {
+                new Point(1, 0), new Point(0, 1),
+                new Point(1, 1), new Point(0, 2)
+            };
+
+            Block block = new Block(Color.Red, 3,
+                firstRotation,
+                secondRotation,
+                thirdRotation,
+                fourthRotation);
 
             return block;
         }
-        
+
     }
 }

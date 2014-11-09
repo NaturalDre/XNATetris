@@ -43,7 +43,7 @@ namespace Tetris
         /// TetrisModel.EmptySpaceColor means no color has been 
         /// locked/filled-in at that position.
         /// </summary>
-        private readonly List<Color> boardData = new List<Color>(
+        private readonly List<Color> _boardData = new List<Color>(
             TetrisModel.BoardRows * TetrisModel.BoardColumns);
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Tetris
         /// </summary>
         private TimeSpan gravityTimer = TetrisModel.GravityCooldown;
 
-        private Block currentBlock = null;
+        private Block _currentBlock = null;
         private List<Func<Block>> blockFactories = new List<Func<Block>>();
         private Random random = new Random();
         private bool canSoftDrop = true;
@@ -67,7 +67,7 @@ namespace Tetris
         {
             // 1 dimensional array to store data for each spot on the tetris board.
             // The Indexer of this class will take a 2D index and covnert it to 1D.
-            this.boardData = new List<Color>(
+            this._boardData = new List<Color>(
                 Enumerable.Repeat<Color>(
                     TetrisModel.EmptySpaceColor, TetrisModel.BoardRows * TetrisModel.BoardColumns));
         }
@@ -75,15 +75,15 @@ namespace Tetris
         /// <summary>
         /// An array of Colors representing each cell on the Tetris board. 
         /// </summary>
-        public List<Color> BoardData { get { return this.boardData; } }
+        public List<Color> BoardData { get { return this._boardData; } }
 
         /// <summary>
         /// The block currently being controlled by the player.
         /// </summary>
         public Block CurrentBlock
         {
-            get { return this.currentBlock; }
-            private set { this.currentBlock = value; }
+            get { return this._currentBlock; }
+            private set { this._currentBlock = value; }
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Tetris
             int index = Utility.ConvertTo1DIndex(row, column, TetrisModel.BoardColumns);
             Debug.Assert(index >= 0 && index < this.BoardData.Count);
 
-            return this.boardData[index];
+            return this.BoardData[index];
         }
 
         private void ChangeCellColor(int row, int column, Color color)
@@ -107,7 +107,7 @@ namespace Tetris
             // Convert the 2D index into a 1D
             int index = Utility.ConvertTo1DIndex(row, column, TetrisModel.BoardColumns);
             Debug.Assert(index >= 0 && index < this.BoardData.Count);
-            this.boardData[index] = color;
+            this.BoardData[index] = color;
         }
 
 
@@ -163,9 +163,9 @@ namespace Tetris
             // Loop through each cell of a rotation and see if its filled in
             // cells would collide with one of our filled in cells if the rotation
             // was placed at position (row, column).
-            for (int curRow = 0; curRow < Rotation.FilledCellsPerBlock; curRow++)
+            for (int curRow = 0; curRow < rotation.Size; curRow++)
             {
-                for (int curColumn = 0; curColumn < Rotation.FilledCellsPerBlock; curColumn++)
+                for (int curColumn = 0; curColumn < rotation.Size; curColumn++)
                 {
                     bool collision =
                         this.IsCellFilled(row + curRow, column + curColumn)
@@ -212,9 +212,9 @@ namespace Tetris
         {
             // Loop through each cell in CurrentBlock's current rotation and
             // fill the corresponding position in on the tetris board.
-            for (int cellRow = 0; cellRow < Rotation.FilledCellsPerBlock; cellRow++)
+            for (int cellRow = 0; cellRow < this.CurrentBlock.Size; cellRow++)
             {
-                for (int cellColumn = 0; cellColumn < Rotation.FilledCellsPerBlock; cellColumn++)
+                for (int cellColumn = 0; cellColumn < this.CurrentBlock.Size; cellColumn++)
                 {
                     if (this.CurrentBlock.CurrentRotation.IsCellFilled(cellRow, cellColumn))
                     {
@@ -368,7 +368,7 @@ namespace Tetris
                         TetrisModel.BoardColumns);
                 }
                 // Add an empty cell for every one we removed.
-                this.boardData.InsertRange(0,
+                this._boardData.InsertRange(0,
                     Enumerable.Repeat<Color>(
                         Color.Magenta, TetrisModel.BoardColumns * rowsToDelete.Count));
             }

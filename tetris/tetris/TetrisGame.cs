@@ -61,8 +61,8 @@ namespace Tetris
             this.tetrisModel.AddBlockFactory(BlockFactories.CreateJBlock);
             this.tetrisModel.AddBlockFactory(BlockFactories.CreateLBlock);
             this.tetrisModel.AddBlockFactory(BlockFactories.CreateOBlock);
-            this.tetrisModel.AddBlockFactory(BlockFactories.CreateTBlock);
             this.tetrisModel.AddBlockFactory(BlockFactories.CreateSBlock);
+            this.tetrisModel.AddBlockFactory(BlockFactories.CreateTBlock);
             this.tetrisModel.AddBlockFactory(BlockFactories.CreateZBlock);
 
 
