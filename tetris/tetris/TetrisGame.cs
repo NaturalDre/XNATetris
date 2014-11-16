@@ -16,19 +16,19 @@ namespace Tetris
     /// </summary>
     public class TetrisGame : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        GraphicsDeviceManager _graphics;
+        SpriteBatch _spriteBatch;
 
-        TetrisModel tetrisModel;
-        TetrisView tetrisView;
-        TetrisController tetrisController;
+        TetrisModel _tetrisModel;
+        TetrisView _tetrisView;
+        TetrisController _tetrisController;
 
         public TetrisGame()
         {
-            graphics = new GraphicsDeviceManager(this);
-            graphics.IsFullScreen = false;
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = TetrisModel.BoardRows * TetrisModel.CellSizeInPixels;
+            _graphics = new GraphicsDeviceManager(this);
+            _graphics.IsFullScreen = false;
+            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = TetrisModel.BoardRows * TetrisModel.CellSizeInPixels;
             Content.RootDirectory = "Content";
         }
 
@@ -46,62 +46,62 @@ namespace Tetris
         }
 
         /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
+        ///     LoadContent will be called once per game and is the place to load
+        ///     all of your content.
         /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            this.tetrisModel = new TetrisModel();
+            _tetrisModel = new TetrisModel();
 
-            this.tetrisModel.AddBlockFactory(BlockFactories.CreateIBlock);
-            this.tetrisModel.AddBlockFactory(BlockFactories.CreateJBlock);
-            this.tetrisModel.AddBlockFactory(BlockFactories.CreateLBlock);
-            this.tetrisModel.AddBlockFactory(BlockFactories.CreateOBlock);
-            this.tetrisModel.AddBlockFactory(BlockFactories.CreateSBlock);
-            this.tetrisModel.AddBlockFactory(BlockFactories.CreateTBlock);
-            this.tetrisModel.AddBlockFactory(BlockFactories.CreateZBlock);
+            _tetrisModel.AddBlockFactory(BlockFactories.CreateIBlock);
+            _tetrisModel.AddBlockFactory(BlockFactories.CreateJBlock);
+            _tetrisModel.AddBlockFactory(BlockFactories.CreateLBlock);
+            _tetrisModel.AddBlockFactory(BlockFactories.CreateOBlock);
+            _tetrisModel.AddBlockFactory(BlockFactories.CreateSBlock);
+            _tetrisModel.AddBlockFactory(BlockFactories.CreateTBlock);
+            _tetrisModel.AddBlockFactory(BlockFactories.CreateZBlock);
 
 
-            this.tetrisModel.StartGame();
+            _tetrisModel.StartGame();
 
-            this.tetrisView = new TetrisView(this, this.tetrisModel);
-            this.tetrisController = new TetrisController(this.tetrisModel);
+            _tetrisView = new TetrisView(this, _tetrisModel);
+            _tetrisController = new TetrisController(_tetrisModel);
         }
 
         /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
+        ///     UnloadContent will be called once per game and is the place to unload
+        ///     all content.
         /// </summary>
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
-            this.tetrisModel = null;
+            _tetrisModel = null;
         }
 
         /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
+        ///     Allows the game to run logic such as updating the world,
+        ///     checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape) == true)
-                this.Exit();
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
 
             // TODO: Add your update logic here
-            this.tetrisModel.Update(gameTime);
-            this.tetrisController.Update(gameTime);
+            _tetrisModel.Update(gameTime);
+            _tetrisController.Update(gameTime);
 
             base.Update(gameTime);
         }
 
         /// <summary>
-        /// This is called when the game should draw itself.
+        ///     This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
@@ -109,7 +109,7 @@ namespace Tetris
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            this.tetrisView.Draw(gameTime);
+            _tetrisView.Draw(gameTime);
             base.Draw(gameTime);
         }
     }

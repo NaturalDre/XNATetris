@@ -1,47 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace BytesOfPi.Graphics
 {
-    class AnimatedSprite : ISprite
+    internal class AnimatedSprite : ISprite
     {
-        Sprite sprite = new Sprite();
-        TimeSpan timeToNextFrame = TimeSpan.FromSeconds(1);
-        TimeSpan fps = TimeSpan.FromSeconds(1);
-        int currentFrame = 1;
-        int rows = 1;
-        int columns = 1;
-        int beginFrame = 1;
-        int endFrame = 1;
+        private Sprite _sprite = new Sprite();
+        private TimeSpan _timeToNextFrame = TimeSpan.FromSeconds(1);
+        private TimeSpan _fps = TimeSpan.FromSeconds(1);
+        private int _currentFrame = 1;
+        private int _rows = 1;
+        private int _columns = 1;
+        private int _beginFrame = 1;
+        private int _endFrame = 1;
 
         public AnimatedSprite()
         {
-
         }
 
-        public AnimatedSprite(Texture2D texture, TimeSpan fps,int rows, int columns)
+        public AnimatedSprite(Texture2D texture, TimeSpan fps, int rows, int columns)
             : this(texture, fps, rows, columns, 1, (rows * columns) - 1)
         {
-
         }
 
         public AnimatedSprite(Texture2D texture, TimeSpan fps, int rows, int columns,
             int beginFrame, int endFrame)
         {
             Debug.Assert(texture != null);
-            this.Sprite.Texture = texture;
-            this.CurrentFrame = 1;
-            this.Fps = fps;
-            this.TimeToNextFrame = fps;
-            this.Rows = rows;
-            this.Columns = columns;
-            this.BeginFrame = beginFrame;
-            this.EndFrame = endFrame;
+            Sprite.Texture = texture;
+            CurrentFrame = 1;
+            Fps = fps;
+            TimeToNextFrame = fps;
+            Rows = rows;
+            Columns = columns;
+            BeginFrame = beginFrame;
+            EndFrame = endFrame;
         }
 
 
@@ -51,186 +46,181 @@ namespace BytesOfPi.Graphics
         // How long until the next frame?
         public TimeSpan TimeToNextFrame
         {
-            get { return this.timeToNextFrame; }
-            protected set { this.timeToNextFrame = value; }
+            get { return _timeToNextFrame; }
+            protected set { _timeToNextFrame = value; }
         }
+
         // Get the current FPS
         public TimeSpan Fps
         {
-            get { return this.fps; }
+            get { return _fps; }
             set
             {
                 if (value.Milliseconds <= 0)
-                    this.fps = TimeSpan.FromSeconds(1);
+                    _fps = TimeSpan.FromSeconds(1);
                 else
-                    this.fps = value;
+                    _fps = value;
             }
         }
+
         // The frame current being displayed.
         public int CurrentFrame
         {
-            get { return this.currentFrame; }
+            get { return _currentFrame; }
             set
             {
                 // The current frame should never be less than 0 or the beginning frame.
-                if (value <= 0 || value < this.BeginFrame)
-                    this.currentFrame = this.BeginFrame;
+                if (value <= 0 || value < BeginFrame)
+                    _currentFrame = BeginFrame;
                 else
-                    this.currentFrame = value;
+                    _currentFrame = value;
                 // The current frame should never be greated than 0 or the ending frame.
-                if (value > this.FrameCount || value > this.EndFrame)
-                    this.currentFrame = this.EndFrame;
+                if (value > FrameCount || value > EndFrame)
+                    _currentFrame = EndFrame;
             }
         }
 
         public int Rows
         {
-            get { return this.rows; }
+            get { return _rows; }
             set
             {
                 if (value < 1)
-                    this.rows = 1;
+                    _rows = 1;
                 else
-                    this.rows = value;
+                    _rows = value;
             }
         }
 
         public int Columns
         {
-            get { return this.columns; }
-            set
-            {
-                if (value < 1)
-                    this.columns = 1;
-                else
-                    this.columns = value;
-            }
+            get { return _columns; }
+            set { _columns = value < 1 ? 1 : value; }
         }
 
         public int BeginFrame
         {
-            get { return this.beginFrame; }
+            get { return _beginFrame; }
             set
             {
-                if (value <= 0 || value > this.EndFrame)
-                    this.beginFrame = 1;
+                if (value <= 0 || value > EndFrame)
+                    _beginFrame = 1;
                 else
-                    this.beginFrame = value;
+                    _beginFrame = value;
             }
         }
 
         public int EndFrame
         {
-            get { return this.endFrame; }
+            get { return _endFrame; }
             set
             {
-                if (value <= 0 || value > this.EndFrame)
-                    this.endFrame = this.FrameCount;
+                if (value <= 0 || value > EndFrame)
+                    _endFrame = FrameCount;
                 else
-                    this.endFrame = value;
+                    _endFrame = value;
             }
         }
 
         public int FrameCount
         {
-            get { return this.Rows * this.Columns; }
+            get { return Rows * Columns; }
         }
 
         private Sprite Sprite
         {
-            get { return this.sprite; }
-            set { this.sprite = value; }
+            get { return _sprite; }
+            set { _sprite = value; }
         }
 
         public Texture2D Texture
         {
-            get { return this.Sprite.Texture; }
+            get { return Sprite.Texture; }
         }
 
         public Vector2 Position
         {
-            get { return this.Sprite.Position; }
-            set { this.Sprite.Position = value; }
+            get { return Sprite.Position; }
+            set { Sprite.Position = value; }
         }
 
         public float Rotation
         {
-            get { return this.Sprite.Rotation; }
-            set { this.Sprite.Rotation = value; }
+            get { return Sprite.Rotation; }
+            set { Sprite.Rotation = value; }
         }
 
         public Vector2 Origin
         {
-            get { return this.Sprite.Origin; }
-            set { this.Sprite.Origin = value; }
+            get { return Sprite.Origin; }
+            set { Sprite.Origin = value; }
         }
 
         public Rectangle? SourceRectangle
         {
-            get { return this.Sprite.SourceRectangle; }
-            set { this.Sprite.SourceRectangle = value; }
+            get { return Sprite.SourceRectangle; }
+            set { Sprite.SourceRectangle = value; }
         }
 
         public float Scale
         {
-            get { return this.Sprite.Scale; }
-            set { this.Sprite.Scale = value; }
+            get { return Sprite.Scale; }
+            set { Sprite.Scale = value; }
         }
 
         public float LayerDepth
         {
-            get { return this.Sprite.LayerDepth; }
-            set { this.Sprite.LayerDepth = value; }
+            get { return Sprite.LayerDepth; }
+            set { Sprite.LayerDepth = value; }
         }
 
         public void Update(GameTime gameTime)
         {
-            if (this.PauseAnimation == true)
+            if (PauseAnimation)
                 return;
 
-            this.TimeToNextFrame -= gameTime.ElapsedGameTime;
+            TimeToNextFrame -= gameTime.ElapsedGameTime;
 
-            if (this.TimeToNextFrame.Milliseconds <= 0)
+            if (TimeToNextFrame.Milliseconds <= 0)
             {
                 NextFrame();
                 // Start counting to the next frame again. We make sure to add the negative
                 // value of TimeToNextFrame to not lose any extra time.
-                this.TimeToNextFrame = (this.Fps + this.TimeToNextFrame);
+                TimeToNextFrame = (Fps + TimeToNextFrame);
             }
-
         }
 
         private void NextFrame()
         {
             // Check to see if we're at the last frame in the animation sheet, or
             // if we're at the last frame the user wants animated.
-            if ((this.CurrentFrame >= this.FrameCount) || this.CurrentFrame >= this.EndFrame)
-                this.CurrentFrame = this.BeginFrame; // If either is true, we start at the BeginFrame.
+            if ((CurrentFrame >= FrameCount) || CurrentFrame >= EndFrame)
+                CurrentFrame = BeginFrame; // If either is true, we start at the BeginFrame.
             else
-                ++this.CurrentFrame;
+                ++CurrentFrame;
 
             // Code below needs testing.
 
             Rectangle source;
             {
-                Point framePosition = new Point();
+                var framePosition = new Point();
 
-                if ((this.CurrentFrame % this.Columns) == 0)
+                if ((CurrentFrame % Columns) == 0)
                 {
-                    framePosition.X = this.Columns;
-                    framePosition.Y = this.CurrentFrame / this.Columns;
+                    framePosition.X = Columns;
+                    framePosition.Y = CurrentFrame / Columns;
                 }
                 else
                 {
-                    framePosition.X = this.CurrentFrame % this.Columns;
-                    framePosition.Y = (this.CurrentFrame / this.Columns) + 1;
+                    framePosition.X = CurrentFrame % Columns;
+                    framePosition.Y = (CurrentFrame / Columns) + 1;
                 }
 
                 --framePosition.X;
                 --framePosition.Y;
 
-                int frameWidth = this.Texture.Width / this.Columns;
-                int frameHeight = this.Texture.Height / this.Rows;
+                int frameWidth = Texture.Width / Columns;
+                int frameHeight = Texture.Height / Rows;
 
                 source.X = (framePosition.X * frameWidth);
                 source.Y = (framePosition.Y * frameHeight);
@@ -239,7 +229,7 @@ namespace BytesOfPi.Graphics
                 source.Height = frameHeight;
             }
 
-            this.SourceRectangle = source;
+            SourceRectangle = source;
         }
 
         protected void Reset()

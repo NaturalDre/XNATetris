@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-
+using BytesOfPi.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -25,174 +22,174 @@ namespace Tetris
         /// </summary>
         public static readonly TimeSpan RotationCooldown;
 
-        private readonly TetrisModel tetrisModel;
+        private readonly TetrisModel _tetrisModel;
         /// <summary>
         /// The amount of time remaining until movement is allowed.
         /// </summary>
-        private TimeSpan movementTimer = TimeSpan.Zero;
+        private TimeSpan _movementTimer = TimeSpan.Zero;
         /// <summary>
         /// The amount of time remaining until rotation is allowed.
         /// </summary>
-        private TimeSpan rotationTimer = TimeSpan.Zero;
+        private TimeSpan _rotationTimer = TimeSpan.Zero;
 
-        BytesOfPi.Input.KeyboardHelper keyboardHelper = new BytesOfPi.Input.KeyboardHelper();
+        BytesOfPi.Input.KeyboardHelper _keyboardHelper = new BytesOfPi.Input.KeyboardHelper();
 
 
         static TetrisController()
         {
-            TetrisController.MovementCooldown = new TimeSpan(0, 0, 0, 0, 50);
-            TetrisController.RotationCooldown = new TimeSpan(0, 0, 0, 0, 50);
+            MovementCooldown = new TimeSpan(0, 0, 0, 0, 50);
+            RotationCooldown = new TimeSpan(0, 0, 0, 0, 50);
         }
 
         public TetrisController(TetrisModel tetrisModel)
         {
             Debug.Assert(tetrisModel != null);
 
-            this.tetrisModel = tetrisModel;
+            _tetrisModel = tetrisModel;
 
             // We need to know if the following keys ever do a keyboard repeat.
-            this.KeyboardHelper.TrackKeyForHardRepeats(TetrisController.MoveLeftKey);
-            this.KeyboardHelper.TrackKeyForHardRepeats(TetrisController.MoveRightKey);
-            this.KeyboardHelper.TrackKeyForHardRepeats(TetrisController.RotateLeftKey);
-            this.KeyboardHelper.TrackKeyForHardRepeats(TetrisController.RotateRightKey);
+            KeyboardHelper.TrackKeyForHardRepeats(MoveLeftKey);
+            KeyboardHelper.TrackKeyForHardRepeats(MoveRightKey);
+            KeyboardHelper.TrackKeyForHardRepeats(RotateLeftKey);
+            KeyboardHelper.TrackKeyForHardRepeats(RotateRightKey);
         }
 
-        private BytesOfPi.Input.KeyboardHelper KeyboardHelper
+        private KeyboardHelper KeyboardHelper
         {
-            get { return this.keyboardHelper; }
-            set { this.keyboardHelper = value; }
+            get { return _keyboardHelper; }
+            set { _keyboardHelper = value; }
         }
 
         /// <summary>
-        /// Attempts to move left if movement is not on cooldown.
+        ///     Attempts to move left if movement is not on cooldown.
         /// </summary>
         private void MoveLeft()
         {
             bool allowMovement = false;
-            if (movementTimer <= TimeSpan.Zero &&
-                    (KeyboardHelper.IsKeyJustPressed(TetrisController.MoveLeftKey) ||
-                    KeyboardHelper.IsKeyHardRepeating(TetrisController.MoveLeftKey)))
+            if (_movementTimer <= TimeSpan.Zero &&
+                (KeyboardHelper.IsKeyJustPressed(MoveLeftKey) ||
+                 KeyboardHelper.IsKeyHardRepeating(MoveLeftKey)))
             {
-                if (tetrisModel.MoveLeft())
-                    movementTimer = TetrisController.MovementCooldown;
+                if (_tetrisModel.MoveLeft())
+                    _movementTimer = MovementCooldown;
             }
         }
 
         /// <summary>
-        /// Attempts to move right if movement is not on cooldown.
+        ///     Attempts to move right if movement is not on cooldown.
         /// </summary>
         private void MoveRight()
         {
             bool allowMovement = false;
-            if (movementTimer <= TimeSpan.Zero &&
-                    (KeyboardHelper.IsKeyJustPressed(TetrisController.MoveRightKey) ||
-                    KeyboardHelper.IsKeyHardRepeating(TetrisController.MoveRightKey)))
+            if (_movementTimer <= TimeSpan.Zero &&
+                (KeyboardHelper.IsKeyJustPressed(MoveRightKey) ||
+                 KeyboardHelper.IsKeyHardRepeating(MoveRightKey)))
             {
-                if (tetrisModel.MoveRight())
-                    movementTimer = TetrisController.MovementCooldown;
+                if (_tetrisModel.MoveRight())
+                    _movementTimer = MovementCooldown;
             }
         }
 
         /// <summary>
-        /// Attempts to rotate left if rotation is not on cooldown.
+        ///     Attempts to rotate left if rotation is not on cooldown.
         /// </summary>
         private void RotateLeft()
         {
             bool allowRotation = false;
-            if (rotationTimer <= TimeSpan.Zero &&
-                (KeyboardHelper.IsKeyJustPressed(TetrisController.RotateLeftKey) ||
-                KeyboardHelper.IsKeyHardRepeating(TetrisController.RotateLeftKey)))
+            if (_rotationTimer <= TimeSpan.Zero &&
+                (KeyboardHelper.IsKeyJustPressed(RotateLeftKey) ||
+                 KeyboardHelper.IsKeyHardRepeating(RotateLeftKey)))
             {
-                if (tetrisModel.RotateLeft())
-                    rotationTimer = TetrisController.RotationCooldown;
+                if (_tetrisModel.RotateLeft())
+                    _rotationTimer = RotationCooldown;
             }
         }
 
         /// <summary>
-        /// Attempts to rotate right if rotation is not on cooldown.
+        ///     Attempts to rotate right if rotation is not on cooldown.
         /// </summary>
         private void RotateRight()
         {
             bool allowRotation = false;
-            if (rotationTimer <= TimeSpan.Zero &&
-                (KeyboardHelper.IsKeyJustPressed(TetrisController.RotateRightKey) ||
-                KeyboardHelper.IsKeyHardRepeating(TetrisController.RotateRightKey)))
+            if (_rotationTimer <= TimeSpan.Zero &&
+                (KeyboardHelper.IsKeyJustPressed(RotateRightKey) ||
+                 KeyboardHelper.IsKeyHardRepeating(RotateRightKey)))
             {
-                if (tetrisModel.RotateRight())
-                    rotationTimer = TetrisController.RotationCooldown;
+                if (_tetrisModel.RotateRight())
+                    _rotationTimer = RotationCooldown;
             }
         }
 
         public void Update(GameTime gameTime)
         {
-            this.KeyboardHelper.Update(gameTime);
-            this.UpdateMovementTimer(gameTime);
-            this.UpdateRotationTimer(gameTime);
+            KeyboardHelper.Update(gameTime);
+            UpdateMovementTimer(gameTime);
+            UpdateRotationTimer(gameTime);
             // Process the player controls. 
-            this.ProcessKeyStates(gameTime);
+            ProcessKeyStates(gameTime);
 
-            if (this.KeyboardHelper.IsKeyJustPressed(Keys.Space))
-                this.tetrisModel.HardDrop();
-            else if (this.KeyboardHelper.IsKeyJustPressed(Keys.LeftShift))
-                this.tetrisModel.SoftDrop();
+            if (KeyboardHelper.IsKeyJustPressed(Keys.Space))
+                _tetrisModel.HardDrop();
+            else if (KeyboardHelper.IsKeyJustPressed(Keys.LeftShift))
+                _tetrisModel.SoftDrop();
         }
 
         /// <summary>
-        /// Process the player's input (movement/rotation).
+        ///     Process the player's input (movement/rotation).
         /// </summary>
         /// <param name="gameTime"></param>
-        void ProcessKeyStates(GameTime gameTime)
+        private void ProcessKeyStates(GameTime gameTime)
         {
             bool moveLeftKeyIsDown =
-                this.KeyboardHelper.IsKeyDown(TetrisController.MoveLeftKey);
+                KeyboardHelper.IsKeyDown(MoveLeftKey);
             bool moveRightKeyIsDown =
-                this.keyboardHelper.IsKeyDown(TetrisController.MoveRightKey);
+                _keyboardHelper.IsKeyDown(MoveRightKey);
 
             bool rotateLeftKeyIsDown =
-                this.KeyboardHelper.IsKeyDown(TetrisController.RotateLeftKey);
+                KeyboardHelper.IsKeyDown(RotateLeftKey);
             bool rotateRightKeyIsDown =
-                this.KeyboardHelper.IsKeyDown(TetrisController.RotateRightKey);
+                KeyboardHelper.IsKeyDown(RotateRightKey);
 
             // If a rotation key was just pressed, we want to immedietly get rid of
             // the rotation cooldown.
-            if (KeyboardHelper.IsKeyJustPressed(TetrisController.RotateLeftKey) ||
-                KeyboardHelper.IsKeyJustPressed(TetrisController.RotateRightKey))
-                this.rotationTimer = TimeSpan.Zero;
+            if (KeyboardHelper.IsKeyJustPressed(RotateLeftKey) ||
+                KeyboardHelper.IsKeyJustPressed(RotateRightKey))
+                _rotationTimer = TimeSpan.Zero;
 
             // If a movement key was just pressed, we want to immedietly get rid of
             // the movement cooldown.
-            if (KeyboardHelper.IsKeyJustPressed(TetrisController.MoveLeftKey) ||
-                KeyboardHelper.IsKeyJustPressed(TetrisController.MoveRightKey))
-                this.movementTimer = TimeSpan.Zero;
+            if (KeyboardHelper.IsKeyJustPressed(MoveLeftKey) ||
+                KeyboardHelper.IsKeyJustPressed(MoveRightKey))
+                _movementTimer = TimeSpan.Zero;
 
             if (moveLeftKeyIsDown && !moveRightKeyIsDown)
-                this.MoveLeft();
+                MoveLeft();
             else if (moveRightKeyIsDown && !moveLeftKeyIsDown)
-                this.MoveRight();
+                MoveRight();
 
             if (rotateLeftKeyIsDown && !rotateRightKeyIsDown)
-                this.RotateLeft();
+                RotateLeft();
             else if (rotateRightKeyIsDown && !rotateLeftKeyIsDown)
-                this.RotateRight();
+                RotateRight();
         }
 
-        void UpdateMovementTimer(GameTime gametTime)
+        private void UpdateMovementTimer(GameTime gametTime)
         {
-            if (this.movementTimer > TimeSpan.Zero)
-                this.movementTimer -= gametTime.ElapsedGameTime;
+            if (_movementTimer > TimeSpan.Zero)
+                _movementTimer -= gametTime.ElapsedGameTime;
 
             // Keep the timer from going below zero.
-            if (this.movementTimer < TimeSpan.Zero)
-                this.movementTimer = TimeSpan.Zero;
+            if (_movementTimer < TimeSpan.Zero)
+                _movementTimer = TimeSpan.Zero;
         }
 
-        void UpdateRotationTimer(GameTime gameTime)
+        private void UpdateRotationTimer(GameTime gameTime)
         {
-            if (this.rotationTimer > TimeSpan.Zero)
-                this.rotationTimer -= gameTime.ElapsedGameTime;
+            if (_rotationTimer > TimeSpan.Zero)
+                _rotationTimer -= gameTime.ElapsedGameTime;
 
-            if (this.rotationTimer < TimeSpan.Zero)
-                this.rotationTimer = TimeSpan.Zero;
+            if (_rotationTimer < TimeSpan.Zero)
+                _rotationTimer = TimeSpan.Zero;
         }
     }
 }

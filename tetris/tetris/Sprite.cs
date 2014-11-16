@@ -1,86 +1,74 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-
 namespace BytesOfPi.Graphics
 {
-    sealed class Sprite: ISprite
+    internal sealed class Sprite : ISprite
     {
-        Texture2D texture = null;
-        Vector2 position = Vector2.Zero;
-        float rotation = 0.0f;
-        Vector2 origin = Vector2.Zero;
-        Rectangle? sourceRectangle = null;
-        float scale = 1.0f;
-        float layerDepth = 0.0f;
+        private Texture2D _texture;
+        private Vector2 _position = Vector2.Zero;
+        private Vector2 _origin = Vector2.Zero;
+        private Rectangle? _sourceRectangle;
+        private float _scale = 1.0f;
 
         public Sprite()
         {
-
+            LayerDepth = 0.0f;
+            Rotation = 0.0f;
         }
 
         public Sprite(Texture2D texture, Vector2 position)
             : this()
         {
             Debug.Assert(texture != null);
-            this.Texture = texture;
-            this.Position = position;
+            Texture = texture;
+            Position = position;
         }
 
-        public Vector2 Position 
-        { 
-            get { return this.position; }
-            set { this.position = value; }
+        public Vector2 Position
+        {
+            get { return _position; }
+            set { _position = value; }
         }
 
-        public float Rotation {
-            get { return this.rotation; }
-            set { this.rotation = value; }
-        }
+        public float Rotation { get; set; }
 
         public Vector2 Origin
         {
-            get { return this.origin; }
-            set { this.origin = value; }
+            get { return _origin; }
+            set { _origin = value; }
         }
 
-        public Nullable<Rectangle> SourceRectangle 
+        public Rectangle? SourceRectangle
         {
-            get { return this.sourceRectangle; }
-            set { this.sourceRectangle = value; }
+            get { return _sourceRectangle; }
+            set { _sourceRectangle = value; }
         }
 
         // TODO: Check against a scale of 0?
-        public float Scale 
+        public float Scale
         {
-            get { return this.scale; }
-            set { this.scale = value; }
+            get { return _scale; }
+            set { _scale = value; }
         }
 
-        public float LayerDepth 
-        {
-            get { return this.layerDepth; }
-            set { this.layerDepth = value; }
-        }
+        public float LayerDepth { get; set; }
+
         /// <summary>
-        /// The Texture2D being used. Passing in null will
-        /// cause everything to be reset to an empty sprite.
+        ///     The Texture2D being used. Passing in null will
+        ///     cause everything to be reset to an empty sprite.
         /// </summary>
-        public Texture2D Texture 
+        public Texture2D Texture
         {
-            get { return texture; }
+            get { return _texture; }
             set
             {
                 // Settings the texture to null means there will be nothing to display,
                 // so we reset this instance to its default settings.
-                if (this.Texture != null && value == null)
+                if (Texture != null && value == null)
                 {
-                    this.Reset();
+                    Reset();
                     return;
                 }
 
@@ -89,18 +77,18 @@ namespace BytesOfPi.Graphics
                 // NOTE: We might want to add an OnTextureChanged event/virtual function,
                 //          because classes that derive from this class might need
                 //          to update their state as a result. e.g.
-                this.texture = value;
+                _texture = value;
             }
         }
 
         /// <summary>
-        /// Reload the sprite using another texture. This
-        /// means your sprite will have default settings.
-        /// The sprite must be not be null for a reload to occur.
+        ///     Reload the sprite using another texture. This
+        ///     means your sprite will have default settings.
+        ///     The sprite must be not be null for a reload to occur.
         /// </summary>
         /// <param name="texture"> The texture you want to use. </param>
-        /// <returns> 
-        /// True if the load was successful, false otherwise.
+        /// <returns>
+        ///     True if the load was successful, false otherwise.
         /// </returns>
         public bool Load(Texture2D texture)
         {
@@ -108,20 +96,20 @@ namespace BytesOfPi.Graphics
             if (texture == null)
                 return false;
 
-            this.Reset();
-            this.Texture = texture;
+            Reset();
+            Texture = texture;
             return true;
         }
 
         private void Reset()
         {
-            this.Position = Vector2.Zero;
-            this.Rotation = 0.0f;
-            this.Origin = Vector2.Zero;
-            this.SourceRectangle = null;
-            this.Scale = 1.0f;
-            this.LayerDepth = 0;
-            this.Texture = null;
+            Position = Vector2.Zero;
+            Rotation = 0.0f;
+            Origin = Vector2.Zero;
+            SourceRectangle = null;
+            Scale = 1.0f;
+            LayerDepth = 0;
+            Texture = null;
         }
     }
 }

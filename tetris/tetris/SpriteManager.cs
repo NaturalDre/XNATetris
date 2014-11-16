@@ -1,62 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace BytesOfPi.Graphics
 {
-    class SpriteManager : Microsoft.Xna.Framework.DrawableGameComponent
+    internal class SpriteManager : DrawableGameComponent
     {
-        private SpriteBatch spriteBatch;
-        private List<Sprite> spriteList = new List<Sprite>();
-        private List<AnimatedSprite> animatedSpriteList = new List<AnimatedSprite>();
+        private readonly List<Sprite> _spriteList = new List<Sprite>();
+        private readonly List<AnimatedSprite> _animatedSpriteList = new List<AnimatedSprite>();
 
         public SpriteManager(Game game)
             : base(game)
         {
-
         }
 
-        protected SpriteBatch SpriteBatch
-        {
-            get { return this.spriteBatch; }
-            set { this.spriteBatch = value; }
-        }
+        protected SpriteBatch SpriteBatch { get; set; }
 
         private List<Sprite> Sprites
         {
-            get { return this.spriteList; }
+            get { return _spriteList; }
         }
 
         private List<AnimatedSprite> AnimatedSprites
         {
-            get { return this.animatedSpriteList; }
+            get { return _animatedSpriteList; }
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            this.SpriteBatch = new SpriteBatch(this.Game.GraphicsDevice);
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
+            SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
         }
 
         protected override void UnloadContent()
         {
-            this.Sprites.Clear();
-            this.AnimatedSprites.Clear();
+            Sprites.Clear();
+            AnimatedSprites.Clear();
 
             base.UnloadContent();
         }
 
         public override void Update(GameTime gameTime)
         {
-            foreach (AnimatedSprite animatedSprite in this.AnimatedSprites)
+            foreach (AnimatedSprite animatedSprite in AnimatedSprites)
                 animatedSprite.Update(gameTime);
 
             base.Update(gameTime);
@@ -66,21 +52,23 @@ namespace BytesOfPi.Graphics
         // does the actual drawing of a sprite.
         public override void Draw(GameTime gameTime)
         {
-            this.SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+            SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
 
-            foreach (Sprite sprite in this.spriteList)
-                this.Draw(sprite);
+            foreach (Sprite sprite in _spriteList)
+                Draw(sprite);
 
-            foreach (AnimatedSprite animatedSprite in this.animatedSpriteList)
-                    this.Draw(animatedSprite);
+            foreach (AnimatedSprite animatedSprite in _animatedSpriteList)
+                Draw(animatedSprite);
 
-            this.SpriteBatch.End();
+            SpriteBatch.End();
             base.Draw(gameTime);
         }
+
         // Draw the sprite to the screen.
         private void Draw(ISprite sprite)
         {
-            this.SpriteBatch.Draw(sprite.Texture, sprite.Position, sprite.SourceRectangle, Color.White, sprite.Rotation, sprite.Origin, sprite.Scale, SpriteEffects.None, sprite.LayerDepth);
+            SpriteBatch.Draw(sprite.Texture, sprite.Position, sprite.SourceRectangle, Color.White, sprite.Rotation,
+                sprite.Origin, sprite.Scale, SpriteEffects.None, sprite.LayerDepth);
         }
 
         // Add a non-animated sprite to the manager.
@@ -88,25 +76,25 @@ namespace BytesOfPi.Graphics
         //      - Perform checks to prevent adding the same one multiple times.
         public void Add(Sprite sprite)
         {
-            this.Sprites.Add(sprite);
+            Sprites.Add(sprite);
         }
+
         // Add an animated sprite to the manager.
         // TODO:
         //      - Perform checks to prevent adding the same one multiple times.
         public void Add(AnimatedSprite animatedSprite)
         {
-            this.AnimatedSprites.Add(animatedSprite);
+            AnimatedSprites.Add(animatedSprite);
         }
 
         public void Remove(Sprite sprite)
         {
-            this.Sprites.Remove(sprite);
+            Sprites.Remove(sprite);
         }
 
         public void Remove(AnimatedSprite animatedSprite)
         {
-            this.AnimatedSprites.Remove(animatedSprite);
+            AnimatedSprites.Remove(animatedSprite);
         }
-
     }
 }
