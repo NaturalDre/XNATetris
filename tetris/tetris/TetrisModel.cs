@@ -12,7 +12,7 @@ namespace Tetris
     ///     SRS rotation will be used: http://tetris.wikia.com/wiki/SRS
     ///     This will be a 10x22 board. Rows 0 and 1 will be hidden, per the Tetris rules.
     /// </summary>
-    class TetrisModel
+    internal class TetrisModel
     {
         /// <summary>
         ///     How much time should pass for gravity to be applied.
@@ -53,6 +53,7 @@ namespace Tetris
         private TimeSpan _gravityTimer = GravityCooldown;
 
         private Block _currentBlock;
+        private Block _nextBlock;
         private readonly List<Func<Block>> _blockFactories = new List<Func<Block>>();
         private readonly Random _random = new Random();
         private bool _canSoftDrop = true;
@@ -87,6 +88,15 @@ namespace Tetris
         {
             get { return _currentBlock; }
             private set { _currentBlock = value; }
+        }
+
+       /// <summary>
+       ///  The block that will be spawned after the CurrentBlock is gone.
+       /// </summary>
+       public Block NextBlock
+        {
+            get { return _nextBlock; }
+            private set { _nextBlock = value; }
         }
 
         /// <summary>
@@ -152,7 +162,19 @@ namespace Tetris
 
         public void StartGame()
         {
-            CurrentBlock = CreateRandomBlock();
+            SpawnNextBlock();
+        }
+
+        /// <summary>
+        ///     Removes the current block from play and spawns another one.
+        /// </summary>
+        private void SpawnNextBlock()
+        {
+            if (NextBlock == null)
+                NextBlock = CreateRandomBlock();
+
+            CurrentBlock = NextBlock;
+            NextBlock = CreateRandomBlock();
         }
 
         private void ResetGravityTimer()
@@ -196,7 +218,7 @@ namespace Tetris
             {
                 LockCurrentBlock();
                 RemoveFilledRows();
-                CurrentBlock = CreateRandomBlock();
+                SpawnNextBlock();
             }
             else // Otherwise, we can move it down one row.
                 CurrentBlock.Row++;

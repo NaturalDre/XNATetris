@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 
 namespace Tetris
 {
@@ -11,6 +12,10 @@ namespace Tetris
             return (T)game.Services.GetService(typeof(T));
         }
 
-       
+        public static Vector2 ConvertToVector2(this Point point)
+        {
+            return new Vector2(point.X, point.Y);
+        }
+
     }
 }
