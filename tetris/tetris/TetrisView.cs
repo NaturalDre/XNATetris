@@ -7,6 +7,11 @@ namespace Tetris
 {
     class TetrisView
     {
+        /// <summary>
+        /// The size that each cell/space on the Tetris board will be drawn.
+        /// </summary>
+        public const int CellSizeInPixels = 32;
+
         private readonly TetrisGame _tetrisGame;
         private readonly TetrisModel _tetrisModel;
         private readonly SpriteBatch _spriteBatch;
@@ -31,7 +36,6 @@ namespace Tetris
             _tetrisModel = tetrisModel;
             _spriteBatch = new SpriteBatch(tetrisGame.GraphicsDevice);
             _boardPosition = new Point(0, 0);
-            //_previewPosition = new Point(_boardPosition.X + (TetrisModel.BoardColumns * TetrisModel.CellSizeInPixels) + TetrisModel.CellSizeInPixels, 0);
 
             try
             {
@@ -58,8 +62,8 @@ namespace Tetris
             Rectangle area = new Rectangle(
                 _boardPosition.X,
                 _boardPosition.Y,
-                TetrisModel.BoardColumns * TetrisModel.CellSizeInPixels,
-                TetrisModel.BoardRows * TetrisModel.CellSizeInPixels);
+                TetrisModel.BoardColumns * TetrisView.CellSizeInPixels,
+                TetrisModel.BoardRows * TetrisView.CellSizeInPixels);
             _spriteBatch.Draw(_areaTexture, area, Color.Black);
         }
 
@@ -77,10 +81,10 @@ namespace Tetris
                         _spriteBatch.Draw(
                             _blockTexture,
                             new Rectangle(
-                                _boardPosition.X + (column * TetrisModel.CellSizeInPixels),
-                                _boardPosition.Y + (row * TetrisModel.CellSizeInPixels),
-                                TetrisModel.CellSizeInPixels,
-                                TetrisModel.CellSizeInPixels),
+                                _boardPosition.X + (column * TetrisView.CellSizeInPixels),
+                                _boardPosition.Y + (row * TetrisView.CellSizeInPixels),
+                                TetrisView.CellSizeInPixels,
+                                TetrisView.CellSizeInPixels),
                             _tetrisModel.GetCellColor(row, column));
                 }
             }
@@ -105,8 +109,8 @@ namespace Tetris
 
         private void DrawPreview()
         {
-            Point textPosition = new Point(_boardPosition.X + (TetrisModel.BoardColumns * TetrisModel.CellSizeInPixels) + (TetrisModel.CellSizeInPixels * 2), 0);
-            Point previewPosition = new Point(textPosition.X + 16, textPosition.Y + (TetrisModel.CellSizeInPixels * 2));
+            Point textPosition = new Point(_boardPosition.X + (TetrisModel.BoardColumns * TetrisView.CellSizeInPixels) + (TetrisView.CellSizeInPixels * 2), 0);
+            Point previewPosition = new Point(textPosition.X + 16, textPosition.Y + (TetrisView.CellSizeInPixels * 2));
 
             SpriteFont font = _tetrisGame.Content.Load<SpriteFont>("Fonts/Arial");
             _spriteBatch.DrawString(font, "NEXT", textPosition.ConvertToVector2(), Color.Black);
@@ -139,7 +143,7 @@ namespace Tetris
                 DrawPreview();
 
                 if (_tetrisModel.GameState == TetrisModel.GameStates.GameOver)
-                    _spriteBatch.DrawString(font, "GAME OVER!", new Vector2(16, (TetrisModel.BoardRows * TetrisModel.CellSizeInPixels) / 2), Color.White);
+                    _spriteBatch.DrawString(font, "GAME OVER!", new Vector2(16, (TetrisModel.BoardRows * TetrisView.CellSizeInPixels) / 2), Color.White);
             }
             else
             {
@@ -176,10 +180,10 @@ namespace Tetris
                             // they are occupying. We then multiply it by the
                             // specified pixel size of each cell to know
                             // where to draw them on the screen.
-                                _boardPosition.X + ((position.X + rotationColumn) * TetrisModel.CellSizeInPixels),
-                                _boardPosition.Y + ((position.Y + rotationRow) * TetrisModel.CellSizeInPixels),
-                                TetrisModel.CellSizeInPixels,
-                                TetrisModel.CellSizeInPixels),
+                                _boardPosition.X + ((position.X + rotationColumn) * TetrisView.CellSizeInPixels),
+                                _boardPosition.Y + ((position.Y + rotationRow) * TetrisView.CellSizeInPixels),
+                                TetrisView.CellSizeInPixels,
+                                TetrisView.CellSizeInPixels),
                             colorTint);
                 }
             }
@@ -201,10 +205,10 @@ namespace Tetris
                             // they are occupying. We then multiply it by the
                             // specified pixel size of each cell to know
                             // where to draw them on the screen.
-                                position.X + (rotationColumn * TetrisModel.CellSizeInPixels),
-                                position.Y + (rotationRow * TetrisModel.CellSizeInPixels),
-                                TetrisModel.CellSizeInPixels,
-                                TetrisModel.CellSizeInPixels),
+                                position.X + (rotationColumn * TetrisView.CellSizeInPixels),
+                                position.Y + (rotationRow * TetrisView.CellSizeInPixels),
+                                TetrisView.CellSizeInPixels,
+                                TetrisView.CellSizeInPixels),
                             colorTint);
                 }
             }

@@ -24,6 +24,8 @@ namespace Tetris
         /// <summary>
         ///     How much time should pass for gravity to be applied.
         /// </summary>
+        /// <seealso cref="SoftDrop"/>
+        /// <seealso cref="HardDrop"/>
         private static readonly TimeSpan GravityCooldown;
 
         /// <summary>
@@ -33,8 +35,6 @@ namespace Tetris
 
         /// <summary>
         ///     The amount of rows the Tetris board should have.
-        ///     Note: The first 2 rows (0 and 1) will not be drawn.
-        ///     The top left of the board is (0,0).
         /// </summary>
         public const int BoardRows = 22;
 
@@ -42,9 +42,6 @@ namespace Tetris
         ///     The amount of columns the Tetris board should have.
         /// </summary>
         public const int BoardColumns = 10;
-
-        // The size that each cell will be when drawn.
-        public const int CellSizeInPixels = 32;
 
         /// <summary>
         ///     Holds the Color value of each cell on the Tetris board.
@@ -271,6 +268,7 @@ namespace Tetris
             else // Otherwise, we can move it down one row.
                 CurrentBlock.Row++;
 
+            // Allow the player to perform a soft drop
             _canSoftDrop = true;
         }
 
@@ -421,7 +419,8 @@ namespace Tetris
 
         /// <summary>
         ///     How many cells in the specified row are filled in
-        ///     on the Tetris board.
+        ///     on the Tetris board. If it equals TetrisModel.BoardColumns,
+        ///     then the entire row is filled and should be cleared.
         /// </summary>
         /// <param name="row"></param>
         /// <returns></returns>
@@ -441,6 +440,7 @@ namespace Tetris
         /// </summary>
         private void RemoveFilledRows()
         {
+            // Stores the index of each row that we're going to delete.
             var rowsToDelete = new List<int>();
 
             // Loop through all rows and mark the ones where every column
