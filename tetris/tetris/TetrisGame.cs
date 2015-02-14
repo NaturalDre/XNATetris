@@ -30,7 +30,7 @@ namespace Tetris
             _graphics = new GraphicsDeviceManager(this);
             _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferWidth = 600;
-            _graphics.PreferredBackBufferHeight = TetrisModel.BoardRows * TetrisModel.CellSizeInPixels;
+            _graphics.PreferredBackBufferHeight = TetrisModel.BoardRows * TetrisView.CellSizeInPixels;
             Content.RootDirectory = "Content";
         }
 
@@ -103,7 +103,7 @@ namespace Tetris
 
             if (_tetrisModel.GameState == TetrisModel.GameStates.GameOver)
             {
-
+                // Do something ... maybe ...
             }
 
             base.Update(gameTime);
