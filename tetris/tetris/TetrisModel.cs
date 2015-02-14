@@ -14,6 +14,13 @@ namespace Tetris
     /// </summary>
     internal class TetrisModel
     {
+        public enum GameStates
+        {
+            NotRunning,
+            Running,
+            GameOver
+        }
+
         /// <summary>
         ///     How much time should pass for gravity to be applied.
         /// </summary>
@@ -45,7 +52,9 @@ namespace Tetris
         ///     locked/filled-in at that position.
         /// </summary>
         private readonly List<Color> _boardData = new List<Color>(
-            BoardRows*BoardColumns);
+            BoardRows * BoardColumns);
+
+        private GameStates _gameState;
 
         /// <summary>
         ///     Time remaining until gravity is applied.
@@ -68,9 +77,11 @@ namespace Tetris
         {
             // 1 dimensional array to store data for each spot on the tetris board.
             // The Indexer of this class will take a 2D index and covnert it to 1D.
-            _boardData = new List<Color>(
-                Enumerable.Repeat(
-                    EmptySpaceColor, BoardRows*BoardColumns));
+            //_boardData = new List<Color>(
+            //    Enumerable.Repeat(
+            //        EmptySpaceColor, BoardRows * BoardColumns));
+
+            _gameState = GameStates.NotRunning;
         }
 
         /// <summary>
@@ -81,6 +92,9 @@ namespace Tetris
             get { return _boardData; }
         }
 
+        public GameStates GameState { get { return _gameState; } }
+
+
         /// <summary>
         /// The block currently being controlled by the player.
         /// </summary>
@@ -90,10 +104,10 @@ namespace Tetris
             private set { _currentBlock = value; }
         }
 
-       /// <summary>
-       ///  The block that will be spawned after the CurrentBlock is gone.
-       /// </summary>
-       public Block NextBlock
+        /// <summary>
+        ///  The block that will be spawned after the CurrentBlock is gone.
+        /// </summary>
+        public Block NextBlock
         {
             get { return _nextBlock; }
             private set { _nextBlock = value; }
@@ -148,6 +162,10 @@ namespace Tetris
         /// <param name="gameTime"> The amount of time passed since the last frame. </param>
         public void Update(GameTime gameTime)
         {
+
+            if (_gameState != GameStates.Running)
+                return;
+
             _gravityTimer -= gameTime.ElapsedGameTime;
             // Check if enough time has passed for gravity to be applied.
             if (_gravityTimer <= TimeSpan.Zero)
@@ -162,19 +180,49 @@ namespace Tetris
 
         public void StartGame()
         {
+            if (_gameState == GameStates.Running || _gameState == GameStates.GameOver)
+                EndGame();
+
+            _boardData.InsertRange(0, Enumerable.Repeat(EmptySpaceColor, BoardRows * BoardColumns));
+            _gameState = GameStates.Running;
             SpawnNextBlock();
+
+        }
+
+        public void EndGame()
+        {
+            if (_gameState != GameStates.Running || _gameState != GameStates.GameOver)
+                return;
+
+            _gameState = GameStates.NotRunning;
+            _boardData.Clear();
+        }
+
+        public void GameOver()
+        {
+            _gameState = GameStates.GameOver;
         }
 
         /// <summary>
-        ///     Removes the current block from play and spawns another one.
+        ///     Removes the current block from play and spawns another one. GameState must be running.
         /// </summary>
         private void SpawnNextBlock()
         {
+            if (_gameState != GameStates.Running)
+                return;
+
             if (NextBlock == null)
                 NextBlock = CreateRandomBlock();
 
-            CurrentBlock = NextBlock;
-            NextBlock = CreateRandomBlock();
+
+            if (RotationFitsAt(NextBlock.CurrentRotation, NextBlock.Row, NextBlock.Column))
+            {
+                CurrentBlock = NextBlock;
+                NextBlock = CreateRandomBlock();
+            }
+            else
+                GameOver();
+
         }
 
         private void ResetGravityTimer()
@@ -275,30 +323,50 @@ namespace Tetris
             return false;
         }
 
-        public bool RotateLeft()
+        /// <summary>
+        /// Attempt to rotate the current block at its current position.
+        /// Wallkicks are performed here, so the position of the block
+        /// may change before the function returns.
+        /// </summary>
+        /// <param name="direction">The direction you want the block rotated.</param>
+        /// <returns></returns>
+        public bool RotateCurrentBlock(Block.RotationDirections direction)
         {
-            if (RotationFitsAt(
-                CurrentBlock.GetNextRotation(Block.RotationDirections.Left),
-                CurrentBlock.Row, CurrentBlock.Column))
+            Rotation nextRotation = CurrentBlock.GetNextRotation(direction);
+
+            // Can we rotate the block in its current position?
+            if (RotationFitsAt(nextRotation, CurrentBlock.Row, CurrentBlock.Column))
             {
-                CurrentBlock.RotateLeft();
-                return true;
+                if (direction == Block.RotationDirections.Left)
+                    CurrentBlock.RotateLeft();
+                else
+                    CurrentBlock.RotateRight();
             }
 
-            return false;
-        }
-
-        public bool RotateRight()
-        {
-            if (RotationFitsAt(
-                CurrentBlock.GetNextRotation(Block.RotationDirections.Right),
-                CurrentBlock.Row, CurrentBlock.Column))
+            // Will it rotate if it was moved one column to the right?
+            else if ((CurrentBlock.Column + 1) < TetrisModel.BoardColumns && // Ensure it can move to the right
+                    RotationFitsAt(nextRotation, CurrentBlock.Row, CurrentBlock.Column + 1))
             {
-                CurrentBlock.RotateRight();
-                return true;
+                CurrentBlock.Column++;
+                if (direction == Block.RotationDirections.Left)
+                    CurrentBlock.RotateLeft();
+                else
+                    CurrentBlock.RotateRight();
             }
+            // Will it rotate if it was moved one column to the left?
+            else if ((CurrentBlock.Column - 1) >= 0 && // Ensure it can move to the left
+                    RotationFitsAt(nextRotation, CurrentBlock.Row, CurrentBlock.Column - 1))
+            {
+                CurrentBlock.Column--;
+                if (direction == Block.RotationDirections.Left)
+                    CurrentBlock.RotateLeft();
+                else
+                    CurrentBlock.RotateRight();
+            }
+            else
+                return false;
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -391,13 +459,13 @@ namespace Tetris
                 {
                     // row * TetrisModel.BoardColumns will get you the first
                     // index of the row.
-                    BoardData.RemoveRange(row*BoardColumns,
+                    BoardData.RemoveRange(row * BoardColumns,
                         BoardColumns);
                 }
                 // Add an empty cell for every one we removed.
                 _boardData.InsertRange(0,
                     Enumerable.Repeat(
-                        Color.Magenta, BoardColumns*rowsToDelete.Count));
+                        Color.Magenta, BoardColumns * rowsToDelete.Count));
             }
         }
 

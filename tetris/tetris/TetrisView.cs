@@ -17,6 +17,7 @@ namespace Tetris
         private readonly Texture2D _blockTexture;
         private readonly Texture2D _areaTexture;
         private readonly Texture2D _backgroundTexture;
+        private readonly Texture2D _gameOverTexture;
 
         private readonly Point _boardPosition;
         //private readonly Point _previewPosition;
@@ -29,7 +30,7 @@ namespace Tetris
             _tetrisGame = tetrisGame;
             _tetrisModel = tetrisModel;
             _spriteBatch = new SpriteBatch(tetrisGame.GraphicsDevice);
-            _boardPosition = new Point(500, 0);
+            _boardPosition = new Point(0, 0);
             //_previewPosition = new Point(_boardPosition.X + (TetrisModel.BoardColumns * TetrisModel.CellSizeInPixels) + TetrisModel.CellSizeInPixels, 0);
 
             try
@@ -110,7 +111,7 @@ namespace Tetris
             SpriteFont font = _tetrisGame.Content.Load<SpriteFont>("Fonts/Arial");
             _spriteBatch.DrawString(font, "NEXT", textPosition.ConvertToVector2(), Color.Black);
 
-            
+
 
             DrawRotationAtScreenPosition(
             _tetrisModel.NextBlock.CurrentRotation,
@@ -121,14 +122,34 @@ namespace Tetris
 
         public void Draw(GameTime gameTime)
         {
+            SpriteFont font = _tetrisGame.Content.Load<SpriteFont>("Fonts/Arial");
+            const string newGameText = "Press 'N' for new game!";
+
+
+
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            if (_tetrisModel.GameState != TetrisModel.GameStates.NotRunning)
+            {
 
-            DrawBackground();
-            DrawOccupiedCells();
-            DrawGhostPiece();
-            DrawControlledPiece();
-            DrawPreview();
 
+                DrawBackground();
+                DrawOccupiedCells();
+                DrawGhostPiece();
+                DrawControlledPiece();
+                DrawPreview();
+
+                if (_tetrisModel.GameState == TetrisModel.GameStates.GameOver)
+                    _spriteBatch.DrawString(font, "GAME OVER!", new Vector2(16, (TetrisModel.BoardRows * TetrisModel.CellSizeInPixels) / 2), Color.White);
+            }
+            else
+            {
+                Vector2 newGameTextSize = font.MeasureString(newGameText);
+                newGameTextSize.X = newGameTextSize.X / 2;
+                newGameTextSize.Y = newGameTextSize.Y / 2;
+
+                _spriteBatch.DrawString(font, newGameText, new Vector2(_tetrisGame.Window.ClientBounds.Width / 2, _tetrisGame.Window.ClientBounds.Height / 2), Color.White, 0, newGameTextSize, 1, SpriteEffects.None, 0);
+
+            }
             _spriteBatch.End();
         }
 

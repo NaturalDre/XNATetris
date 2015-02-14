@@ -19,6 +19,8 @@ namespace Tetris
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
 
+        KeyboardState _previousKeyboardState;
+
         TetrisModel _tetrisModel;
         TetrisView _tetrisView;
         TetrisController _tetrisController;
@@ -27,7 +29,7 @@ namespace Tetris
         {
             _graphics = new GraphicsDeviceManager(this);
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferWidth = 600;
             _graphics.PreferredBackBufferHeight = TetrisModel.BoardRows * TetrisModel.CellSizeInPixels;
             Content.RootDirectory = "Content";
         }
@@ -41,7 +43,7 @@ namespace Tetris
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            _previousKeyboardState = new KeyboardState();
             base.Initialize();
         }
 
@@ -66,8 +68,6 @@ namespace Tetris
             _tetrisModel.AddBlockFactory(BlockFactories.CreateZBlock);
 
 
-            _tetrisModel.StartGame();
-
             _tetrisView = new TetrisView(this, _tetrisModel);
             _tetrisController = new TetrisController(_tetrisModel);
         }
@@ -89,6 +89,7 @@ namespace Tetris
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState currentKeyboarsState = Keyboard.GetState();
             // Allows the game to exit
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -97,7 +98,17 @@ namespace Tetris
             _tetrisModel.Update(gameTime);
             _tetrisController.Update(gameTime);
 
+            if (_previousKeyboardState.IsKeyUp(Keys.N) && currentKeyboarsState.IsKeyDown(Keys.N))
+                _tetrisModel.StartGame();
+
+            if (_tetrisModel.GameState == TetrisModel.GameStates.GameOver)
+            {
+
+            }
+
             base.Update(gameTime);
+
+            _previousKeyboardState = currentKeyboarsState;
         }
 
         /// <summary>

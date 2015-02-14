@@ -100,7 +100,7 @@ namespace Tetris
                 (KeyboardHelper.IsKeyJustPressed(RotateLeftKey) ||
                  KeyboardHelper.IsKeyHardRepeating(RotateLeftKey)))
             {
-                if (_tetrisModel.RotateLeft())
+                if (_tetrisModel.RotateCurrentBlock(Block.RotationDirections.Left))
                     _rotationTimer = RotationCooldown;
             }
         }
@@ -115,7 +115,7 @@ namespace Tetris
                 (KeyboardHelper.IsKeyJustPressed(RotateRightKey) ||
                  KeyboardHelper.IsKeyHardRepeating(RotateRightKey)))
             {
-                if (_tetrisModel.RotateRight())
+                if (_tetrisModel.RotateCurrentBlock(Block.RotationDirections.Right))
                     _rotationTimer = RotationCooldown;
             }
         }
