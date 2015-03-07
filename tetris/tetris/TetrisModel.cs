@@ -63,6 +63,7 @@ namespace Tetris
         private readonly List<Func<Block>> _blockFactories = new List<Func<Block>>();
         private readonly Random _random = new Random();
         private bool _canSoftDrop = true;
+        private int _points = 0;
 
         static TetrisModel()
         {
@@ -90,7 +91,7 @@ namespace Tetris
         }
 
         public GameStates GameState { get { return _gameState; } }
-
+        public int Points { get { return _points; } }
 
         /// <summary>
         /// The block currently being controlled by the player.
@@ -168,10 +169,9 @@ namespace Tetris
             if (_gravityTimer <= TimeSpan.Zero)
             {
                 ApplyGravity();
-                // We add timeRemaining to gravityTimeSpan so we don't throw away any time.
-                // (timeRemaining could have a negative value).
+                // We add _gravityTimer to GravityCooldown so we don't throw away any time, because
+                // _gravityTimer could have a negative value.
                 _gravityTimer = GravityCooldown + _gravityTimer;
-                Console.WriteLine("Gravity Applied.");
             }
         }
 
@@ -180,8 +180,10 @@ namespace Tetris
             if (_gameState == GameStates.Running || _gameState == GameStates.GameOver)
                 EndGame();
 
+            // Add all the cells that represent the Tetris board.
             _boardData.InsertRange(0, Enumerable.Repeat(EmptySpaceColor, BoardRows * BoardColumns));
             _gameState = GameStates.Running;
+
             SpawnNextBlock();
 
         }
@@ -192,6 +194,7 @@ namespace Tetris
                 return;
 
             _gameState = GameStates.NotRunning;
+            _points = 0;
             _boardData.Clear();
         }
 
@@ -436,7 +439,8 @@ namespace Tetris
         }
 
         /// <summary>
-        ///     Remove all rows that are filled.
+        ///     Remove all rows that are filled. Also gives points for
+        ///     each destroyed row.
         /// </summary>
         private void RemoveFilledRows()
         {
@@ -466,6 +470,8 @@ namespace Tetris
                 _boardData.InsertRange(0,
                     Enumerable.Repeat(
                         Color.Magenta, BoardColumns * rowsToDelete.Count));
+
+                _points = 1000 * (rowsToDelete.Count * rowsToDelete.Count);
             }
         }
 

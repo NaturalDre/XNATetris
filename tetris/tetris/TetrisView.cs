@@ -98,7 +98,7 @@ namespace Tetris
                 _tetrisModel.CurrentBlock.CurrentRotation,
                 _tetrisModel.CurrentBlock.Size,
                 ghostPosition,
-                Color.White * 0.15f); // Multiply by a number less than 1 to make it transparent
+                Color.White * 0.25f); // Multiply by a number less than 1 to make it transparent
         }
 
         private void DrawControlledPiece()
@@ -124,6 +124,15 @@ namespace Tetris
             _tetrisModel.NextBlock.Color);
         }
 
+        private void DrawPoints()
+        {
+            Point textPosition = new Point(_boardPosition.X + (TetrisModel.BoardColumns * TetrisView.CellSizeInPixels) + (TetrisView.CellSizeInPixels * 2), 200);
+
+            SpriteFont font = _tetrisGame.Content.Load<SpriteFont>("Fonts/Arial");
+            _spriteBatch.DrawString(font, _tetrisModel.Points.ToString(), textPosition.ConvertToVector2(), Color.Black);
+
+        }
+
         public void Draw(GameTime gameTime)
         {
             SpriteFont font = _tetrisGame.Content.Load<SpriteFont>("Fonts/Arial");
@@ -141,6 +150,7 @@ namespace Tetris
                 DrawGhostPiece();
                 DrawControlledPiece();
                 DrawPreview();
+                DrawPoints();
 
                 if (_tetrisModel.GameState == TetrisModel.GameStates.GameOver)
                     _spriteBatch.DrawString(font, "GAME OVER!", new Vector2(16, (TetrisModel.BoardRows * TetrisView.CellSizeInPixels) / 2), Color.White);
